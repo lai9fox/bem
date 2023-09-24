@@ -1,6 +1,7 @@
-import createBem from "../src";
+import defineBem from "../src";
 
-const bem = createBem('arr-test');
+const createBem = defineBem('bem');
+const bem = createBem('nav');
 
 describe('Array Test: ', () => {
 
@@ -9,8 +10,8 @@ describe('Array Test: ', () => {
       'button',
       'input'
     ])).toEqual([
-      'arr-test__button',
-      'arr-test__input',
+      'bem-nav__button',
+      'bem-nav__input',
     ]);
   });
 
@@ -19,8 +20,8 @@ describe('Array Test: ', () => {
       'button',
       'input'
     ], 'append')).toEqual([
-      'arr-test__button--append',
-      'arr-test__input--append',
+      'bem-nav__button--append',
+      'bem-nav__input--append',
     ]);
   });
 
@@ -29,8 +30,8 @@ describe('Array Test: ', () => {
       ':hover',
       ':click'
     ])).toEqual([
-      'arr-test--hover',
-      'arr-test--click',
+      'bem-nav--hover',
+      'bem-nav--click',
     ]);
   });
 
@@ -39,8 +40,8 @@ describe('Array Test: ', () => {
       ':hover',
       ':click'
     ], 'append')).toEqual([
-      'arr-test--hover',
-      'arr-test--click',
+      'bem-nav--hover',
+      'bem-nav--click',
     ]);
   });
 
@@ -49,8 +50,8 @@ describe('Array Test: ', () => {
       'button:hover',
       'input:click'
     ])).toEqual([
-      'arr-test__button--hover',
-      'arr-test__input--click',
+      'bem-nav__button--hover',
+      'bem-nav__input--click',
     ]);
   });
 
@@ -59,8 +60,8 @@ describe('Array Test: ', () => {
       'button:hover',
       'input:click'
     ], 'append')).toEqual([
-      'arr-test__button--hover',
-      'arr-test__input--click',
+      'bem-nav__button--hover',
+      'bem-nav__input--click',
     ]);
   });
 
@@ -73,12 +74,9 @@ describe('Array Test: ', () => {
         audio: false,
       }
     ])).toEqual([
-      'arr-test__button',
-      'arr-test__input',
-      {
-        'arr-test__video': -99,
-        'arr-test__audio': false,
-      }
+      'bem-nav__button',
+      'bem-nav__input',
+      'bem-nav__video',
     ])
   });
 
@@ -91,12 +89,9 @@ describe('Array Test: ', () => {
         'audio:played': false,
       }
     ])).toEqual([
-      'arr-test__button',
-      'arr-test__input',
-      {
-        'arr-test__video': -99,
-        'arr-test__audio--played': false,
-      }
+      'bem-nav__button',
+      'bem-nav__input',
+      'bem-nav__video',
     ])
   });
 
@@ -109,12 +104,9 @@ describe('Array Test: ', () => {
         'audio:played': false,
       }
     ], 'append')).toEqual([
-      'arr-test__button--focus',
-      'arr-test__input--append',
-      {
-        'arr-test__video--append': -99,
-        'arr-test__audio--played': false,
-      }
+      'bem-nav__button--focus',
+      'bem-nav__input--append',
+      'bem-nav__video--append',
     ])
   });
 
@@ -130,11 +122,9 @@ describe('Array Test: ', () => {
         // empty
       }
     ], 'append')).toEqual([
-      'arr-test__radio--append',
-      'arr-test__input--append',
-      {
-        'arr-test__video--append': -99,
-      }
+      'bem-nav__radio--append',
+      'bem-nav__input--append',
+      'bem-nav__video--append',
     ])
   });
 
