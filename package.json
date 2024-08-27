@@ -1,6 +1,6 @@
 {
   "name": "@lai9fox/bem",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "css bem class generator，bem 生成器",
   "main": "dist/index.js",
   "files": [
@@ -10,7 +10,8 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run test && npm run build"
   },
   "repository": {
     "type": "git",
