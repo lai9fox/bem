@@ -1,86 +1,81 @@
-const getVarType = Object.prototype.toString;
+function init() {
 
-enum VarType {
-	String = '[object String]',
-	Object = '[object Object]',
-	Array = '[object Array]',
-}
+	/**
+	 * 连接元素的符号
+	 */
+	let e = '__';
 
-const defaultBemConfig = { elementConcat: '__', modifierConcat: '--' };
+	/**
+	 * 连接描述的符号
+	 */
+	let m = '--';
 
-export type BemConfig = typeof defaultBemConfig;
+	/**
+	 * 设置连接符
+	 */
+	function setConcat({ elementConcat, modifyConcat }) {
+		e = elementConcat || e;
+		m = modifyConcat || m;
+	}
 
-export type EleSet = string | object | (string | object)[];
+	/**
+	 * 转换字符串
+	 */
+	function convertString(ns: string, em: string, modify?: string): string {
+		const [ele, innerModify] = em.split(':');
+		const mod = innerModify || modify;
+		return `${ns}${ele ? e + ele : ''}${mod ? m + mod : ''}`;
+	}
 
-export default function defineBem(prefix?: string, config?: Partial<BemConfig>) {
+	/**
+	 * 转换对象
+	 */
+	function convertObject(ns: string, em: object, modify?: string): string[] {
+		const converts = [];
+		Object.entries(em).forEach(([key, val]) => {
+			if (!val) return;
+			converts.push(convertString(ns, key, modify));
+		});
+		return converts;
+	}
 
-	const _prefix = prefix ? prefix + '-' : '';
-	const _config = Object.assign({}, defaultBemConfig, config || {});
+	/**
+	 * 转换数组
+	 */
+	function convertArray(ns: string, em: (string | object)[], modify?: string): string[] {
+		const converts = [];
+		em.forEach(eleM => {
+			if (typeof eleM === 'string') {
+				eleM && converts.push(convertString(ns, eleM, modify));
+			} else if (Object.prototype.toString.call(eleM) === '[object Object]') {
+				converts.push(...convertObject(ns, eleM, modify));
+			}
+		})
+		return converts;
+	}
 
-	return (namespace: string) => {
-
-		if (typeof namespace !== 'string') {
-			throw new Error("A 'namespace' of type string is required");
-		}
-
-		const resolveString = (strEle: string, appendModifier?: string) => {
-			const { elementConcat, modifierConcat} = _config;
-
-			let ele = '';
-			let mod: string;
-
-			if (strEle === '') {
-				mod = appendModifier ? `${modifierConcat}${appendModifier}` : '';
-			} else if (strEle.startsWith(':')) {
-				mod = `${modifierConcat}${strEle.substring(1)}`;
+	/**
+	 * 输入命名空间，返回 bem 构造器
+	 * @param namespace
+	 */
+	function createBem(namespace?: string) {
+		if (typeof namespace !== "string") throw new Error("A 'namespace' of type string is required");
+		return function bem(em?: string | (string | object)[] | object, modify?: string): string | string[] {
+			if (Array.isArray(em)) {
+				return convertArray(namespace, em, modify);
+			} else if (Object.prototype.toString.call(em) === '[object Object]') {
+				return convertObject(namespace, em as object, modify);
+			} else if (typeof em === 'string') {
+				return convertString(namespace, em, modify);
 			} else {
-				const [e, m] = strEle.split(':');
-				ele = `${elementConcat}${e}`;
-				const comboModifier = m || appendModifier;
-				mod = comboModifier ? `${modifierConcat}${comboModifier}` : '';
-			}
-
-			return `${_prefix}${namespace}${ele}${mod}`;
-		}
-
-		const resolveObject = (objEle: object, appendModifier?: string) => {
-			const entries = Object.entries(objEle);
-			const bemClasses: string[] = [];
-			for (let i = 0; i < entries.length; i++) {
-				const [key, value] = entries[i];
-				if (!value) {
-					continue;
-				}
-				bemClasses.push(resolveString(key, appendModifier));
-			}
-			return bemClasses;
-		}
-
-		const resolveArray = (arrEle: (string | object)[], appendModifier?: string) => {
-			const bemClasses: string[] = [];
-			for (const ele of arrEle) {
-				if (getVarType.call(ele) === VarType.Object) {
-					bemClasses.push(...resolveObject(ele as object, appendModifier));
-				} else {
-					ele && bemClasses.push(resolveString(ele as string, appendModifier));
-				}
-			}
-			return bemClasses;
-		}
-
-		return (eleSet?: EleSet, appendModifier?: string) => {
-			switch (getVarType.call(eleSet)) {
-				case VarType.String:
-					return resolveString(eleSet as string, appendModifier);
-				case VarType.Object:
-					return resolveObject(eleSet as object, appendModifier);
-				case VarType.Array:
-					return resolveArray(eleSet as (string | object)[], appendModifier);
-				default: {
-					const mod = appendModifier ? `${_config.modifierConcat}${appendModifier}` : '';
-					return `${_prefix}${namespace}${mod}`;
-				}
+				return convertString(namespace, '');
 			}
 		}
-	};
+	}
+
+	createBem.setConcat = setConcat;
+
+	return createBem;
 }
+
+export default init();

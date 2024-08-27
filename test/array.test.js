@@ -1,6 +1,5 @@
-import defineBem from "../src";
+import createBem from "../src";
 
-const createBem = defineBem('bem');
 const bem = createBem('nav');
 
 describe('Array Test: ', () => {
@@ -10,8 +9,8 @@ describe('Array Test: ', () => {
       'button',
       'input'
     ])).toEqual([
-      'bem-nav__button',
-      'bem-nav__input',
+      'nav__button',
+      'nav__input',
     ]);
   });
 
@@ -20,8 +19,8 @@ describe('Array Test: ', () => {
       'button',
       'input'
     ], 'append')).toEqual([
-      'bem-nav__button--append',
-      'bem-nav__input--append',
+      'nav__button--append',
+      'nav__input--append',
     ]);
   });
 
@@ -30,8 +29,8 @@ describe('Array Test: ', () => {
       ':hover',
       ':click'
     ])).toEqual([
-      'bem-nav--hover',
-      'bem-nav--click',
+      'nav--hover',
+      'nav--click',
     ]);
   });
 
@@ -40,8 +39,8 @@ describe('Array Test: ', () => {
       ':hover',
       ':click'
     ], 'append')).toEqual([
-      'bem-nav--hover',
-      'bem-nav--click',
+      'nav--hover',
+      'nav--click',
     ]);
   });
 
@@ -50,8 +49,8 @@ describe('Array Test: ', () => {
       'button:hover',
       'input:click'
     ])).toEqual([
-      'bem-nav__button--hover',
-      'bem-nav__input--click',
+      'nav__button--hover',
+      'nav__input--click',
     ]);
   });
 
@@ -60,8 +59,8 @@ describe('Array Test: ', () => {
       'button:hover',
       'input:click'
     ], 'append')).toEqual([
-      'bem-nav__button--hover',
-      'bem-nav__input--click',
+      'nav__button--hover',
+      'nav__input--click',
     ]);
   });
 
@@ -74,9 +73,9 @@ describe('Array Test: ', () => {
         audio: false,
       }
     ])).toEqual([
-      'bem-nav__button',
-      'bem-nav__input',
-      'bem-nav__video',
+      'nav__button',
+      'nav__input',
+      'nav__video',
     ])
   });
 
@@ -89,9 +88,9 @@ describe('Array Test: ', () => {
         'audio:played': false,
       }
     ])).toEqual([
-      'bem-nav__button',
-      'bem-nav__input',
-      'bem-nav__video',
+      'nav__button',
+      'nav__input',
+      'nav__video',
     ])
   });
 
@@ -104,9 +103,9 @@ describe('Array Test: ', () => {
         'audio:played': false,
       }
     ], 'append')).toEqual([
-      'bem-nav__button--focus',
-      'bem-nav__input--append',
-      'bem-nav__video--append',
+      'nav__button--focus',
+      'nav__input--append',
+      'nav__video--append',
     ])
   });
 
@@ -122,9 +121,9 @@ describe('Array Test: ', () => {
         // empty
       }
     ], 'append')).toEqual([
-      'bem-nav__radio--append',
-      'bem-nav__input--append',
-      'bem-nav__video--append',
+      'nav__radio--append',
+      'nav__input--append',
+      'nav__video--append',
     ])
   });
 
