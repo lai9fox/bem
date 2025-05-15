@@ -1,5 +1,6 @@
-import createBem from "../src";
+import initialBem from '../src';
 
+const createBem = initialBem();
 const bem = createBem('nav');
 
 describe('Object Test: ', () => {
@@ -14,7 +15,7 @@ describe('Object Test: ', () => {
   test('pure mod', () => {
     expect(bem({
       ':hover': true,
-      'focus': false,
+      focus: false,
     })).toEqual(['nav--hover']);
   });
 
@@ -52,7 +53,7 @@ describe('Object Test: ', () => {
       button: 'button',
       ':mouse-in': true,
       ':mouse-out': 0.5 > 1 ? 'bigger' : 'less',
-      'video:played': false
+      'video:played': false,
     }, 'append')).toEqual([
       'nav__input--append',
       'nav__button--append',

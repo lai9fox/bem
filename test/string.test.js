@@ -1,5 +1,6 @@
-import createBem from "../src";
+import initialBem from '../src';
 
+const createBem = initialBem();
 const bem = createBem('nav');
 
 describe('String Test: ', () => {

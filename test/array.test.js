@@ -1,5 +1,6 @@
-import createBem from "../src";
+import initialBem from '../src';
 
+const createBem = initialBem();
 const bem = createBem('nav');
 
 describe('Array Test: ', () => {
@@ -7,7 +8,7 @@ describe('Array Test: ', () => {
   test('pure ele', () => {
     expect(bem([
       'button',
-      'input'
+      'input',
     ])).toEqual([
       'nav__button',
       'nav__input',
@@ -17,7 +18,7 @@ describe('Array Test: ', () => {
   test('ele with append mod', () => {
     expect(bem([
       'button',
-      'input'
+      'input',
     ], 'append')).toEqual([
       'nav__button--append',
       'nav__input--append',
@@ -27,7 +28,7 @@ describe('Array Test: ', () => {
   test('pure mod', () => {
     expect(bem([
       ':hover',
-      ':click'
+      ':click',
     ])).toEqual([
       'nav--hover',
       'nav--click',
@@ -37,7 +38,7 @@ describe('Array Test: ', () => {
   test('mod with append mod', () => {
     expect(bem([
       ':hover',
-      ':click'
+      ':click',
     ], 'append')).toEqual([
       'nav--hover',
       'nav--click',
@@ -47,7 +48,7 @@ describe('Array Test: ', () => {
   test('ele with inline mod', () => {
     expect(bem([
       'button:hover',
-      'input:click'
+      'input:click',
     ])).toEqual([
       'nav__button--hover',
       'nav__input--click',
@@ -57,7 +58,7 @@ describe('Array Test: ', () => {
   test('full description with append mod', () => {
     expect(bem([
       'button:hover',
-      'input:click'
+      'input:click',
     ], 'append')).toEqual([
       'nav__button--hover',
       'nav__input--click',
@@ -71,12 +72,12 @@ describe('Array Test: ', () => {
       {
         video: -99,
         audio: false,
-      }
+      },
     ])).toEqual([
       'nav__button',
       'nav__input',
       'nav__video',
-    ])
+    ]);
   });
 
   test('with inline mod object', () => {
@@ -86,12 +87,12 @@ describe('Array Test: ', () => {
       {
         video: -99,
         'audio:played': false,
-      }
+      },
     ])).toEqual([
       'nav__button',
       'nav__input',
       'nav__video',
-    ])
+    ]);
   });
 
   test('with object and append mod', () => {
@@ -101,12 +102,12 @@ describe('Array Test: ', () => {
       {
         video: -99,
         'audio:played': false,
-      }
+      },
     ], 'append')).toEqual([
       'nav__button--focus',
       'nav__input--append',
       'nav__video--append',
-    ])
+    ]);
   });
 
   test('exist falsy value', () => {
@@ -119,12 +120,12 @@ describe('Array Test: ', () => {
       },
       {
         // empty
-      }
+      },
     ], 'append')).toEqual([
       'nav__radio--append',
       'nav__input--append',
       'nav__video--append',
-    ])
+    ]);
   });
 
   test('empty array', () => {
