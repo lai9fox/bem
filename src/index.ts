@@ -1,68 +1,16 @@
-class Bem {
-  namespace: string;
-  elementConcat: string;
-  modifyConcat: string;
-  blockName: string;
+import { BlockBuilder } from './block.js';
+import { assertName, normalizeOptions } from './validation.js';
+import type { BemFactory, BemOptions } from './types.js';
 
-  constructor(namespace: string, elementConcat: string, modifyConcat: string) {
-    this.namespace = namespace;
-    this.elementConcat = elementConcat;
-    this.modifyConcat = modifyConcat;
-  }
+export function createBem(options?: BemOptions): BemFactory {
+  const resolvedOptions = normalizeOptions(options);
 
-  createBem(blockName: string): (em?: string | object | (string | object)[], modify?: string) => string | string[] {
-    this.blockName = blockName;
-    return this.bem.bind(this);
-  }
-
-  bem(em?: string | object | (string | object)[], modify?: string): string | string[] {
-    if (Array.isArray(em)) return this.convertArray(em, modify);
-    if (typeof em === 'object') return this.convertObject(em, modify);
-    if (typeof em === 'string') return this.convertString(em, modify);
-    return this.convertString('');
-  }
-
-  convertString(em: string, modify?: string): string {
-    const [ele, innerModify] = em.split(':');
-    const mod = innerModify || modify;
-    return `${ this.namespace }${ this.blockName }${ ele ? this.elementConcat + ele : '' }${ mod ? this.modifyConcat + mod : '' }`;
-  }
-
-  convertObject(em: object, modify?: string): string[] {
-    const converts: string[] = [];
-    Object.entries(em).forEach(([key, val]) => {
-      if (!val) return;
-      converts.push(this.convertString(key, modify));
-    });
-    return converts;
-  }
-
-  convertArray(em: (string | object)[], modify?: string): string[] {
-    const converts: string[] = [];
-    em.forEach(eleM => {
-      if (typeof eleM === 'string' && eleM) {
-        converts.push(this.convertString(eleM, modify));
-      } else if (typeof eleM === 'object') {
-        converts.push(...this.convertObject(eleM, modify));
-      }
-    });
-    return converts;
-  }
+  return Object.freeze({
+    block(name: string) {
+      assertName(name, 'block');
+      return Object.freeze(new BlockBuilder(resolvedOptions, name));
+    },
+  });
 }
 
-export default function(config?: string | { namespace?: string, elementConcat?: string, modifyConcat?: string }): (blockName: string) => (em?: string | object | (string | object)[], modify?: string) => string | string[] {
-  let n = '';
-  let e = '__';
-  let m = '--';
-
-  if (typeof config === 'string') {
-    n = config;
-  } else if (typeof config === 'object') {
-    const { namespace, elementConcat, modifyConcat } = config;
-    if (namespace) n = namespace;
-    if (elementConcat) e = elementConcat;
-    if (modifyConcat) m = modifyConcat;
-  }
-  const b = new Bem(n, e, m);
-  return b.createBem.bind(b);
-}
+export type { BemBlock, BemFactory, BemOptions, ClassInput, Conditions } from './types.js';
