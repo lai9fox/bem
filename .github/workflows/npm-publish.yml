@@ -1,0 +1,23 @@
+# Publish to npm via OIDC trusted publishing
+# https://docs.npmjs.com/trusted-publishers/
+
+name: Publish to npm
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+      - run: npm install
+      - run: npm publish
