@@ -1,7 +1,7 @@
 {
   "name": "@lai9fox/bem",
-  "version": "4.0.0",
-  "description": "css bem class generator，bem 生成器",
+  "version": "5.0.0",
+  "description": "Typed BEM class name generator",
   "main": "dist/index.js",
   "files": [
     "dist/**"
@@ -9,8 +9,11 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "node --no-warnings --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "lint": "eslint . --ext .ts",
+    "docs:dev": "pnpm --dir site dev",
+    "docs:build": "pnpm --dir site build",
+    "docs:preview": "pnpm --dir site preview",
     "prepublishOnly": "npm run test && npm run build"
   },
   "repository": {
@@ -28,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/lai9fox/bem/issues"
   },
-  "homepage": "https://github.com/lai9fox/bem#readme",
+  "homepage": "https://bem.fox9.dev/",
   "devDependencies": {
     "@lai9fox/eslint-config": "^2.1.2",
     "@types/jest": "^29.5.14",

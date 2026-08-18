@@ -1,93 +1,92 @@
-[中文文档](./README.md) | [English Docs](./README-EN.md)
+[中文文档](./README.md) · [Docs site](https://bem.fox9.dev/en/)
 
 # BEM Class Name Generator
 
-## Creating a Generator with Namespace
+`@lai9fox/bem` generates BEM class names through explicit methods. Every generator method returns a string that can be assigned directly to `class` or `className`; batches are joined with one ASCII space.
 
-```javascript
-import initialBem from '@lai9fox/bem';
+Full guide, API, and examples: [docs site](https://bem.fox9.dev/en/).
 
-const createBem1 = initialBem();
-const bem1 = createBem1('blockName');
-bem1(); // blockName
+## Create a generator
 
-const createBem2 = initialBem('mynamespace-');
-const bem2 = createBem2('blockName');
-bem2(); // mynamespace-blockName
+```ts
+import { createBem } from "@lai9fox/bem";
 
-const createBem3 = initialBem({ namespace: 'mynamespace-', elementConcat: '_', modifyConcat: '-' });
-const bem3 = createBem3('blockName');
-bem3(); // mynamespace-blockName
-bem3('element'); // mynamespace-blockName_element
-bem3(':modifier'); // mynamespace-blockName-modifier
+const bem = createBem({
+  namespace: "acme-",
+  elementSeparator: "__",
+  modifierSeparator: "--",
+});
+
+const button = bem.block("button");
 ```
 
-- `namespace`: The namespace, defaults to `''`.
-- `elementConcat`: The connector between block and element, defaults to `__`.
-- `modifyConcat`: The connector between block/element and modifier, defaults to `--`.
+The defaults are:
 
-## Usage
-
-After creating the generator, you can generate class names in three forms:
-
-```javascript
-const createBem = initialBem();
-const bem = createBem('nav');
+```ts
+{
+  namespace: '',
+  elementSeparator: '__',
+  modifierSeparator: '--',
+}
 ```
 
-### String
+## Generate one class
 
-You can generate class names with modifiers using inline modifiers, which have higher priority than the optional modifier parameter.
-
-- If the string contains `:`, the part before `:` is treated as an element, and the part after as a modifier.
-- If the string starts with `:`, it indicates a block modifier.
-- The optional modifier parameter can be passed as the second argument but is ignored if an inline modifier is present.
-
-```javascript
-bem(''); // same as bem() => 'nav'
-bem('', 'focus'); // 'nav--focus'
-bem('search'); // 'nav__search'
-bem(':focus'); // 'nav--focus'
-bem(':hover', 'focus'); // 'nav--hover' (inline modifier takes precedence)
-bem('search:focus'); // 'nav__search--focus'
-bem('search', 'focus'); // 'nav__search--focus'
-bem('search:disabled', 'focus'); // 'nav__search--disabled' (inline modifier takes precedence)
+```ts
+button.block(); // 'acme-button'
+button.element("icon"); // 'acme-button__icon'
+button.modifier("disabled"); // 'acme-button--disabled'
+button.elementModifier("icon", "active"); // 'acme-button__icon--active'
 ```
 
-### Object
+## Generate homogeneous batches
 
-When using the object form, only properties with truthy values will generate corresponding class names.
+Homogeneous batch methods accept name arrays, remove later duplicates, and return one space-separated string.
 
-- Keys can be element names, block modifiers (starting with `:`), or element-modifier combinations (`element:modifier`).
-- If an optional modifier parameter is provided, it applies to elements without inline modifiers.
+```ts
+button.elements(["icon", "label"]);
+// 'acme-button__icon acme-button__label'
 
-```javascript
-bem({}); // []
-bem({}, 'focus'); // []
-bem({ search: true, logo: false }); // ['nav__search']
-bem({ ':focus': true, ':hover': false }); // ['nav--focus']
-bem({ ':active': true, ':hover': false }, 'focus'); // ['nav--active'] (inline modifier takes precedence)
-bem({ 'search:focus': true, 'logo:hover': false }); // ['nav__search--focus']
-bem({ search: true, logo: false }, 'disabled'); // ['nav__search--disabled']
-bem({ 'search:focus': true, 'logo': true }, 'disabled'); // ['nav__search--focus', 'nav__logo--disabled']
+button.modifiers(["disabled", "loading"]);
+// 'acme-button--disabled acme-button--loading'
+
+button.elementModifiers("icon", ["active", "loading"]);
+// 'acme-button__icon--active acme-button__icon--loading'
 ```
 
-### Array
+An empty array returns `''`.
 
-The array form allows mixing strings and objects to generate multiple BEM class names.
+## Generate a mixed class string
 
-- Each item in the array can be a string or an object.
-- String items follow the string form rules.
-- Object items follow the object form rules.
-- The optional modifier parameter applies to elements without inline modifiers.
+Use `classes()` to describe block, element, modifier, and element-modifier classes together. Conditions use JavaScript truthiness: truthy values emit a class and falsy values omit it.
 
-```javascript
-bem([]); // []
-bem([], 'hover'); // []
-bem(['search', 'logo']); // ['nav__search', 'nav__logo']
-bem([':hover', ':focus']); // ['nav--hover', 'nav--focus']
-bem(['search:focus', 'logo:hover']); // ['nav__search--focus', 'nav__logo--hover']
-bem(['search', 'logo'], 'disabled'); // ['nav__search--disabled', 'nav__logo--disabled']
-bem(['search:focus', 'logo'], 'disabled'); // ['nav__search--focus', 'nav__logo--disabled']
-bem(['search:focus', 'logo', { header: true, 'links:active': true }], 'disabled'); // ['nav__search--focus', 'nav__logo--disabled', 'nav__header--disabled', 'nav__links--active']
+```ts
+button.classes({
+  block: true,
+  elements: {
+    icon: true,
+    label: showLabel,
+  },
+  modifiers: {
+    disabled: isDisabled,
+  },
+  elementModifiers: {
+    icon: { active: isActive },
+  },
+});
+// 'acme-button acme-button__icon acme-button__label acme-button--disabled acme-button__icon--active'
 ```
+
+Output order is always `block`, `elements`, `modifiers`, then `elementModifiers`; each object uses JavaScript own-enumerable-property order. Complete class names are stably de-duplicated, preserving their first occurrence.
+
+`classes()` never infers parent classes. `modifiers.disabled` emits only `block--disabled`, and `elementModifiers.icon.active` emits only `block__icon--active`. Declare the base class explicitly through `block` or `elements` when it is needed.
+
+## Validation
+
+- Block, element, and modifier names must be non-empty strings without whitespace.
+- `namespace` may be empty but cannot contain whitespace.
+- Separators must be non-empty strings without whitespace.
+- Batch names must be arrays. `classes()` fields `elements`, `modifiers`, and `elementModifiers` must be non-null, non-array objects.
+- `classes()` itself and every `elementModifiers` entry must also be non-null, non-array objects.
+
+Structural errors throw `TypeError`. Names and separators are composed literally: the library does not parse generated output, so names may contain separators and distinct structures may generate the same class name.

@@ -1,0 +1,198 @@
+---
+import type { AppPath, Locale } from "../lib/i18n";
+import { NAV, localizedPath, swapLocale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  path: AppPath;
+}
+
+const { locale, path } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const withBase = (p: string) => `${base.replace(/\/$/, "")}${p}`;
+const home = withBase(localizedPath(locale, "/"));
+const otherLocaleLabel = locale === "zh" ? "EN" : "中文";
+const otherLocaleHref = withBase(swapLocale(locale, path));
+const themeLabel =
+  locale === "zh" ? "切换浅色或深色主题" : "Toggle light or dark theme";
+const menuLabel = locale === "zh" ? "打开菜单" : "Open menu";
+---
+
+<header class="site-header" id="site-header">
+  <a class="brand" href={home}>bem()</a>
+  <div class="header-tools">
+    <a href={otherLocaleHref} hreflang={locale === "zh" ? "en" : "zh-CN"}
+      >{otherLocaleLabel}</a
+    >
+    <button
+      type="button"
+      class="theme-toggle"
+      id="theme-toggle"
+      aria-label={themeLabel}
+      aria-pressed="false"
+    >
+      <svg
+        class="icon-sun"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="4"></circle>
+        <path
+          d="M12 3v1.5M12 19.5V21M4.9 4.9l1.1 1.1M18 18l1.1 1.1M3 12h1.5M19.5 12H21M4.9 19.1l1.1-1.1M18 6l1.1-1.1"
+        ></path>
+      </svg>
+      <svg
+        class="icon-moon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+      >
+        <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 7 7 0 0 0 20 14.5z"></path>
+      </svg>
+    </button>
+    <a
+      class="header-external"
+      href="https://www.npmjs.com/package/@lai9fox/bem"
+      target="_blank"
+      rel="noopener noreferrer">NPM</a
+    >
+    <a
+      class="header-external"
+      href="https://github.com/lai9fox/bem"
+      target="_blank"
+      rel="noopener noreferrer">GitHub</a
+    >
+    <button
+      type="button"
+      class="nav-toggle"
+      id="nav-toggle"
+      aria-label={menuLabel}
+      aria-expanded="false"
+      aria-controls="site-nav"
+    >
+      <svg
+        class="icon-menu"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+      >
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+      <svg
+        class="icon-close"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+      >
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+  </div>
+  <nav
+    class="nav"
+    id="site-nav"
+    aria-label={locale === "zh" ? "主导航" : "Main"}
+  >
+    {
+      NAV.map((item) => (
+        <a
+          href={withBase(localizedPath(locale, item.path))}
+          aria-current={path === item.path ? "page" : undefined}
+        >
+          {locale === "zh" ? item.zh : item.en}
+        </a>
+      ))
+    }
+    <span class="nav-sep nav-compact-only" aria-hidden="true"></span>
+    <a
+      class="nav-compact-only"
+      href="https://www.npmjs.com/package/@lai9fox/bem"
+      target="_blank"
+      rel="noopener noreferrer">NPM</a
+    >
+    <a
+      class="nav-compact-only"
+      href="https://github.com/lai9fox/bem"
+      target="_blank"
+      rel="noopener noreferrer">GitHub</a
+    >
+  </nav>
+</header>
+
+<script is:inline>
+  (function () {
+    var key = "bem-theme";
+    var header = document.getElementById("site-header");
+    var themeBtn = document.getElementById("theme-toggle");
+    var navBtn = document.getElementById("nav-toggle");
+    var nav = document.getElementById("site-nav");
+
+    function currentTheme() {
+      return document.documentElement.getAttribute("data-theme") === "dark"
+        ? "dark"
+        : "light";
+    }
+    function syncTheme() {
+      if (!themeBtn) return;
+      themeBtn.setAttribute(
+        "aria-pressed",
+        currentTheme() === "dark" ? "true" : "false",
+      );
+    }
+    if (themeBtn) {
+      themeBtn.addEventListener("click", function () {
+        var next = currentTheme() === "dark" ? "light" : "dark";
+        var root = document.documentElement;
+        root.setAttribute("data-theme", next);
+        try {
+          localStorage.setItem(key, next);
+        } catch (e) {}
+        syncTheme();
+      });
+      syncTheme();
+    }
+
+    function setNavOpen(open) {
+      if (!header || !navBtn) return;
+      header.classList.toggle("is-nav-open", open);
+      navBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      navBtn.setAttribute(
+        "aria-label",
+        open
+          ? navBtn.getAttribute("data-label-close") || "Close menu"
+          : navBtn.getAttribute("data-label-open") || "Open menu",
+      );
+    }
+    if (navBtn && header) {
+      var openLabel = navBtn.getAttribute("aria-label") || "Open menu";
+      navBtn.setAttribute("data-label-open", openLabel);
+      navBtn.setAttribute(
+        "data-label-close",
+        openLabel.indexOf("打开") !== -1 ? "关闭菜单" : "Close menu",
+      );
+      navBtn.addEventListener("click", function () {
+        setNavOpen(!header.classList.contains("is-nav-open"));
+      });
+      if (nav) {
+        nav.addEventListener("click", function (event) {
+          if (event.target && event.target.closest("a")) setNavOpen(false);
+        });
+      }
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") setNavOpen(false);
+      });
+      window.addEventListener("resize", function () {
+        if (window.matchMedia("(min-width: 861px)").matches) setNavOpen(false);
+      });
+    }
+  })();
+</script>

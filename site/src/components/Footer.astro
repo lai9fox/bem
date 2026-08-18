@@ -1,0 +1,31 @@
+---
+import {
+  buildTime,
+  formatBuildTime,
+  gitSha,
+  gitShaFull,
+} from "../lib/build-info";
+
+const timeLabel = formatBuildTime(buildTime);
+const commitUrl = gitShaFull
+  ? `https://github.com/lai9fox/bem/commit/${gitShaFull}`
+  : undefined;
+---
+
+<footer class="site-footer">
+  <p class="footer-meta">
+    <span>MIT · @lai9fox/bem</span>
+    <span aria-hidden="true">·</span>
+    <time datetime={buildTime}>{timeLabel}</time>
+    <span aria-hidden="true">·</span>
+    {
+      commitUrl ? (
+        <a href={commitUrl} target="_blank" rel="noopener noreferrer">
+          {gitSha}
+        </a>
+      ) : (
+        <span>{gitSha}</span>
+      )
+    }
+  </p>
+</footer>

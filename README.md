@@ -1,90 +1,92 @@
-[中文文档](./README.md) | [English Docs](./README-EN.md)
+[English](./README-EN.md) · [文档站点](https://bem.fox9.dev/)
 
-## 创建命名空间下的生成器
+# BEM 类名生成器
 
-```javascript
-import initialBem from '@lai9fox/bem';
+`@lai9fox/bem` 用显式方法生成 BEM 类名。所有生成方法都返回一个可直接赋给 `class` 或 `className` 的字符串；批量结果使用单个空格连接。
 
-const createBem1 = initialBem();
-const bem1 = createBem1('blockName');
-bem1(); // blockName
+完整指南、API 与示例见 [文档站点](https://bem.fox9.dev/)。
 
-const createBem2 = initialBem('mynamespace-');
-const bem2 = createBem2('blockName');
-bem2(); // mynamespace-blockName
+## 安装与创建
 
-const createBem3 = initialBem({ namespace: 'mynamespace-', elementConcat: '_', modifyConcat: '-' });
-const bem3 = createBem3('blockName');
-bem3(); // mynamespace-blockName
-bem3('element'); // mynamespace-blockName_element
-bem3(':modifier'); // mynamespace-blockName-modifier
-```
-- `namespace` 命名空间，默认值为 `''`
-- `elementConcat` 定义块与元素的连接符，默认值为 `__`
-- `modifyConcat` 块或者元素与修饰符的连接符，默认值为 `--`
+```ts
+import { createBem } from "@lai9fox/bem";
 
-## 使用
+const bem = createBem({
+  namespace: "acme-",
+  elementSeparator: "__",
+  modifierSeparator: "--",
+});
 
-创建生成器后，可通过以下 3 种形式生成类名
-
-```javascript
-const createBem = initialBem();
-const bem = createBem('nav');
+const button = bem.block("button");
 ```
 
-### 字符串
+`createBem()` 的默认配置为：
 
-可以通过字符串形式生成BEM类名。字符串可以包含内联修饰符，通过 : 分割。内联修饰符的优先级高于可选的修饰符参数。
-
-- 如果字符串中包含 `:`，则 `:` 之前的部分被视为元素，之后的部分被视为修饰符。
-- 如果字符串以 `:` 开头，则表示块的修饰符。
-- 可选的修饰符参数可以作为第二个参数传入，但在有内联修饰符时会被忽略。
-
-```javascript
-bem(''); // 等同于 bem() => 'nav'
-bem('', 'focus'); // 'nav--focus'
-bem('search'); // 'nav__search'
-bem(':focus'); // 'nav--focus'
-bem(':hover', 'focus'); // 'nav--hover'（内联修饰符优先）
-bem('search:focus'); // 'nav__search--focus'
-bem('search', 'focus'); // 'nav__search--focus'
-bem('search:disabled', 'focus'); // 'nav__search--disabled'（内联修饰符优先）
+```ts
+{
+  namespace: '',
+  elementSeparator: '__',
+  modifierSeparator: '--',
+}
 ```
 
-### 对象
+## 单个类名
 
-使用对象形式时，对象的键表示元素或修饰符，值为真时才会生成对应的类名。
-
-- 键可以是元素名、块修饰符（以 `:` 开头）、或元素与修饰符的组合（`element:modifier`）。
-- 如果传入可选修饰符参数，它会应用到没有内联修饰符的元素上。
-
-```javascript
-bem({}); // []
-bem({}, 'focus'); // []
-bem({ search: true, logo: false }); // ['nav__search']
-bem({ ':focus': true, ':hover': false }); // ['nav--focus']
-bem({ ':active': true, ':hover': false }, 'focus'); // ['nav--active']（内联修饰符优先）
-bem({ 'search:focus': true, 'logo:hover': false }); // ['nav__search--focus']
-bem({ search: true, logo: false }, 'disabled'); // ['nav__search--disabled']
-bem({ 'search:focus': true, 'logo': true }, 'disabled'); // ['nav__search--focus', 'nav__logo--disabled']
+```ts
+button.block(); // 'acme-button'
+button.element("icon"); // 'acme-button__icon'
+button.modifier("disabled"); // 'acme-button--disabled'
+button.elementModifier("icon", "active"); // 'acme-button__icon--active'
 ```
 
-### 数组
+## 同类批量生成
 
-数组形式允许混合使用字符串和对象来生成多个BEM类名。
+同类批量方法接受名称数组、稳定去重，并返回单个空格连接的字符串。
 
-- 数组中的每个元素可以是字符串或对象。
-- 字符串元素遵循字符串形式的规则。
-- 对象元素遵循对象形式的规则。
-- 可选修饰符参数会应用到没有内联修饰符的元素上。
+```ts
+button.elements(["icon", "label"]);
+// 'acme-button__icon acme-button__label'
 
-```javascript
-bem([]); // []
-bem([], 'hover'); // []
-bem(['search', 'logo']); // ['nav__search', 'nav__logo']
-bem([':hover', ':focus']); // ['nav--hover', 'nav--focus']
-bem(['search:focus', 'logo:hover']); // ['nav__search--focus', 'nav__logo--hover']
-bem(['search', 'logo'], 'disabled'); // ['nav__search--disabled', 'nav__logo--disabled']
-bem(['search:focus', 'logo'], 'disabled'); // ['nav__search--focus', 'nav__logo--disabled']
-bem(['search:focus', 'logo', { header: true, 'links:active': true }], 'disabled'); // ['nav__search--focus', 'nav__logo--disabled', 'nav__header--disabled', 'nav__links--active']
+button.modifiers(["disabled", "loading"]);
+// 'acme-button--disabled acme-button--loading'
+
+button.elementModifiers("icon", ["active", "loading"]);
+// 'acme-button__icon--active acme-button__icon--loading'
 ```
+
+空数组返回 `''`。
+
+## 混合生成
+
+使用 `classes()` 一次声明 block、element、modifier 和 element modifier。每个条件值按 JavaScript truthiness 判断：truthy 输出，falsy 忽略。
+
+```ts
+button.classes({
+  block: true,
+  elements: {
+    icon: true,
+    label: showLabel,
+  },
+  modifiers: {
+    disabled: isDisabled,
+  },
+  elementModifiers: {
+    icon: { active: isActive },
+  },
+});
+// 'acme-button acme-button__icon acme-button__label acme-button--disabled acme-button__icon--active'
+```
+
+输出顺序固定为 `block`、`elements`、`modifiers`、`elementModifiers`；每个对象内部遵循 JavaScript 自有可枚举属性顺序。生成的完整类名稳定去重，保留首次出现的位置。
+
+`classes()` 不会隐式补充父类：`modifiers.disabled` 只输出 `block--disabled`，`elementModifiers.icon.active` 只输出 `block__icon--active`。如需 block 或 element 基础类，请在对应的 `block` 或 `elements` 字段中显式声明。
+
+## 校验规则
+
+- block、element 和 modifier 必须是非空且不含空白的字符串。
+- `namespace` 可以为空，但不得包含空白。
+- 两个连接符必须是非空且不含空白的字符串。
+- 批量名称必须是数组；`classes()` 的 `elements`、`modifiers` 和 `elementModifiers` 必须是非 `null`、非数组对象。
+- `classes()` 自身及其每个 `elementModifiers` 条目也必须是非 `null`、非数组对象。
+
+结构错误会抛出 `TypeError`。名称和连接符采用原样拼接：库不会解析生成结果，因此名称中允许出现连接符，且不同结构可以得到相同的类名。

@@ -1,0 +1,72 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { Locale } from "../lib/i18n";
+import { localizedPath } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const withBase = (p: string) => `${base.replace(/\/$/, "")}${p}`;
+
+const copy =
+  locale === "zh"
+    ? {
+        title: "@lai9fox/bem",
+        headline: "BEM 类名，一目了然",
+        lead: "显式方法生成 block、element、modifier",
+        ctaGuide: "快速上手",
+        ctaExamples: "示例",
+        installTitle: "安装",
+      }
+    : {
+        title: "@lai9fox/bem",
+        headline: "BEM class names, made explicit",
+        lead: "Generate blocks, elements, and modifiers with clear methods",
+        ctaGuide: "Get started",
+        ctaExamples: "Examples",
+        installTitle: "Install",
+      };
+---
+
+<BaseLayout
+  title={locale === "zh"
+    ? "@lai9fox/bem · BEM 类名生成器"
+    : "@lai9fox/bem · BEM class name generator"}
+  description={copy.lead}
+  locale={locale}
+  path="/"
+>
+  <section class="hero">
+    <p class="hero-brand">{copy.title}</p>
+    <h1>{copy.headline}</h1>
+    <p class="hero-lead">{copy.lead}</p>
+    <div class="cta-row">
+      <a
+        class="btn btn-primary"
+        href={withBase(localizedPath(locale, "/guide/"))}>{copy.ctaGuide}</a
+      >
+      <a
+        class="btn btn-ghost"
+        href={withBase(localizedPath(locale, "/examples/"))}
+        >{copy.ctaExamples}</a
+      >
+    </div>
+    <div class="hero-output" aria-label="example output">
+      <div class="label">// output</div>
+      <div>
+        <span class="accent">acme-button</span> acme-button__icon
+        <span class="accent">acme-button--disabled</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>{copy.installTitle}</h2>
+    <div class="install">
+      <span><span class="accent">$</span> npm i @lai9fox/bem</span>
+    </div>
+  </section>
+</BaseLayout>
