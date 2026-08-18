@@ -1,6 +1,6 @@
 ---
 title: Examples
-description: Common BEM class naming conventions.
+description: "Copy-ready TypeScript examples for common BEM class names: buttons, conditional modifiers, and batched elements."
 locale: en
 ---
 

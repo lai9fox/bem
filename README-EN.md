@@ -2,7 +2,7 @@
 
 # BEM Class Name Generator
 
-`@lai9fox/bem` generates BEM class names through explicit methods. Every generator method returns a string that can be assigned directly to `class` or `className`; batches are joined with one ASCII space.
+`@lai9fox/bem` is a TypeScript BEM class name generator that generates BEM class names through explicit methods. Every generator method returns a string that can be assigned directly to `class` or `className`; batches are joined with one ASCII space.
 
 Full guide, API, and examples: [docs site](https://bem.fox9.dev/en/).
 

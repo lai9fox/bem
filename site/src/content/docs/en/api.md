@@ -1,6 +1,6 @@
 ---
 title: API reference
-description: createBem, BemBlock methods, and validation rules.
+description: "createBem and BemBlock: options, validation, and methods for blocks, elements, modifiers, and classes()."
 locale: en
 ---
 

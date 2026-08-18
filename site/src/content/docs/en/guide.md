@@ -1,6 +1,6 @@
 ---
 title: Guide
-description: Install, configure, and generate your first BEM class names.
+description: "Install @lai9fox/bem, configure namespace and separators, and generate your first typed BEM class names with createBem."
 locale: en
 ---
 

@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process';
+import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
@@ -41,9 +42,22 @@ function rehypeWrapTables() {
 export default defineConfig({
   site: 'https://bem.fox9.dev',
   base: '/',
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: 'zh',
+        locales: {
+          zh: 'zh-CN',
+          en: 'en',
+        },
+      },
+    }),
+  ],
   trailingSlash: 'always',
+  compressHTML: true,
   markdown: {
-    rehypePlugins: [rehypeWrapTables],
+    processor: unified({
+      rehypePlugins: [rehypeWrapTables],
+    }),
   },
 });

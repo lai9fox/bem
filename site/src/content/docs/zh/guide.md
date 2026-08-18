@@ -1,6 +1,6 @@
 ---
 title: 快速上手
-description: 安装、配置与第一个 BEM 类名。
+description: "安装 @lai9fox/bem，配置 namespace 与连接符，用 createBem 生成第一个 BEM 类名。"
 locale: zh
 ---
 

@@ -16,7 +16,7 @@ const copy =
     ? {
         title: "@lai9fox/bem",
         headline: "BEM 类名，一目了然",
-        lead: "显式方法生成 block、element、modifier",
+        lead: "用显式方法生成 BEM 的 block、element、modifier。TypeScript 类型安全，返回可直接用于 class / className 的字符串。",
         ctaGuide: "快速上手",
         ctaExamples: "示例",
         installTitle: "安装",
@@ -24,7 +24,7 @@ const copy =
     : {
         title: "@lai9fox/bem",
         headline: "BEM class names, made explicit",
-        lead: "Generate blocks, elements, and modifiers with clear methods",
+        lead: "Generate BEM block, element, and modifier class names with explicit TypeScript methods. Returns strings you can assign to class or className.",
         ctaGuide: "Get started",
         ctaExamples: "Examples",
         installTitle: "Install",
@@ -33,8 +33,8 @@ const copy =
 
 <BaseLayout
   title={locale === "zh"
-    ? "@lai9fox/bem · BEM 类名生成器"
-    : "@lai9fox/bem · BEM class name generator"}
+    ? "@lai9fox/bem · TypeScript BEM 类名生成器"
+    : "@lai9fox/bem · Typed BEM class name generator"}
   description={copy.lead}
   locale={locale}
   path="/"

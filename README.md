@@ -2,7 +2,7 @@
 
 # BEM 类名生成器
 
-`@lai9fox/bem` 用显式方法生成 BEM 类名。所有生成方法都返回一个可直接赋给 `class` 或 `className` 的字符串；批量结果使用单个空格连接。
+`@lai9fox/bem` 是 TypeScript BEM 类名生成器，用显式方法生成 BEM 类名。所有生成方法都返回一个可直接赋给 `class` 或 `className` 的字符串；批量结果使用单个空格连接。
 
 完整指南、API 与示例见 [文档站点](https://bem.fox9.dev/)。
 

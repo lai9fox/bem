@@ -1,6 +1,7 @@
 ---
 import type { Locale, AppPath } from '../lib/i18n';
 import { absoluteUrl, localizedPath } from '../lib/i18n';
+import { buildJsonLd } from '../lib/jsonld';
 
 interface Props {
   title: string;
@@ -17,12 +18,26 @@ const canonicalPath = localizedPath(locale, path);
 const canonical = absoluteUrl(site, base, canonicalPath);
 const zhUrl = absoluteUrl(site, base, localizedPath('zh', path));
 const enUrl = absoluteUrl(site, base, localizedPath('en', path));
+const homeUrl = absoluteUrl(site, base, localizedPath(locale, '/'));
 const ogImage = absoluteUrl(site, base, '/og.png');
 const fullTitle = path === '/' ? title : `${title} · @lai9fox/bem`;
+const ogImageAlt =
+  locale === 'zh'
+    ? '@lai9fox/bem · TypeScript BEM 类名生成器'
+    : '@lai9fox/bem · Typed BEM class name generator';
+const jsonLd = buildJsonLd({
+  title,
+  description,
+  locale,
+  path,
+  canonical,
+  homeUrl,
+});
 ---
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
+<meta name="theme-color" content="#f5f6f3" />
 <link rel="canonical" href={canonical} />
 {noindex ? <meta name="robots" content="noindex" /> : null}
 <link rel="alternate" hreflang="zh-CN" href={zhUrl} />
@@ -34,9 +49,14 @@ const fullTitle = path === '/' ? title : `${title} · @lai9fox/bem`;
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={ogImageAlt} />
 <meta property="og:locale" content={locale === 'zh' ? 'zh_CN' : 'en_US'} />
 <meta property="og:locale:alternate" content={locale === 'zh' ? 'en_US' : 'zh_CN'} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={ogImageAlt} />
+<script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />

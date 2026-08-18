@@ -1,6 +1,6 @@
 ---
 title: API 参考
-description: createBem、BemBlock 方法与校验规则。
+description: "createBem 与 BemBlock 的选项、校验和方法：block、element、modifier、classes()。"
 locale: zh
 ---
 

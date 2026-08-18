@@ -1,6 +1,6 @@
 ---
 title: 示例
-description: 常见场景的 BEM 类名写法。
+description: "按钮、条件 modifier、批量 element 等常见 BEM 类名写法，可直接用于 TypeScript 项目。"
 locale: zh
 ---
 

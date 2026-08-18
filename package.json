@@ -1,7 +1,7 @@
 {
   "name": "@lai9fox/bem",
   "version": "5.0.0",
-  "description": "Typed BEM class name generator",
+  "description": "Typed BEM class name generator for TypeScript. Explicit methods for blocks, elements, and modifiers that return class/className strings.",
   "main": "dist/index.js",
   "files": [
     "dist/**"
@@ -24,7 +24,12 @@
     "css",
     "bem",
     "class",
-    "bem generator"
+    "bem generator",
+    "typescript",
+    "classname",
+    "css-modules",
+    "block-element-modifier",
+    "bem-css"
   ],
   "author": "lai9fox",
   "license": "MIT",
