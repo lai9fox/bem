@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocLayout from '../layouts/DocLayout.astro';
+import type { AppPath, Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+  slug: 'guide' | 'api' | 'examples';
+  path: AppPath;
+}
+
+const { locale, slug, path } = Astro.props;
+const docs = await getCollection('docs');
+const entry = docs.find((d) => d.id === `${locale}/${slug}`);
+
+if (!entry) {
+  throw new Error(`Missing doc: ${locale}/${slug} (have: ${docs.map((d) => d.id).join(', ')})`);
+}
+
+const { Content, headings } = await render(entry);
+---
+
+<DocLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  locale={locale}
+  path={path}
+  headings={headings}
+>
+  <Content />
+</DocLayout>

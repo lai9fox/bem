@@ -1,0 +1,45 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { AppPath, Locale } from '../lib/i18n';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  path: AppPath;
+  headings: Heading[];
+}
+
+const { title, description, locale, path, headings } = Astro.props;
+const toc = headings.filter((h) => h.depth === 2);
+---
+
+<BaseLayout title={title} description={description} locale={locale} path={path}>
+  <div class="doc-shell">
+    <article class="doc-article prose">
+      <h1>{title}</h1>
+      <p class="doc-lead">{description}</p>
+      <slot />
+    </article>
+    {
+      toc.length > 0 && (
+        <aside class="toc" aria-label={locale === 'zh' ? '本页目录' : 'On this page'}>
+          <p class="toc-title">{locale === 'zh' ? '本页' : 'On this page'}</p>
+          <ol>
+            {toc.map((h) => (
+              <li>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      )
+    }
+  </div>
+</BaseLayout>

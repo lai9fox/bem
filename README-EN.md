@@ -1,10 +1,10 @@
-[中文文档](./README.md) · [Docs site](https://lai9fox.github.io/bem/en/)
+[中文文档](./README.md) · [Docs site](https://bem.fox9.dev/en/)
 
 # BEM Class Name Generator
 
 `@lai9fox/bem` generates BEM class names through explicit methods. Every generator method returns a string that can be assigned directly to `class` or `className`; batches are joined with one ASCII space.
 
-Full guide, API, and examples: [docs site](https://lai9fox.github.io/bem/en/).
+Full guide, API, and examples: [docs site](https://bem.fox9.dev/en/).
 
 ## Create a generator
 
