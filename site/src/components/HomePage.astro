@@ -20,6 +20,16 @@ const copy =
         ctaGuide: "快速上手",
         ctaExamples: "示例",
         installTitle: "安装",
+        purposeTitle: "适用于组件库与业务组件",
+        purpose: "为按钮、导航、卡片等组件统一 BEM 命名，用 namespace 区分项目，用条件对象组合状态类名。生成器不依赖 UI 框架，可用于 TypeScript、JavaScript、React 和 Vue。",
+        scope: "库负责生成类名字符串；DOM 结构和 CSS 样式由你定义。它不会生成样式表，也不会自动映射 CSS Modules 的局部类名。",
+        docsTitle: "从第一次使用到完整参考",
+        guideLabel: "BEM 快速上手",
+        guideDetail: "完成一个带图标的按钮，连接类名、DOM 与 CSS。",
+        apiLabel: "TypeScript API 参考",
+        apiDetail: "查阅方法签名、配置默认值、条件组合和校验规则。",
+        examplesLabel: "React 与 Vue 示例",
+        examplesDetail: "将组件状态映射到按钮和内部元素各自的类名。",
       }
     : {
         title: "@lai9fox/bem",
@@ -28,6 +38,16 @@ const copy =
         ctaGuide: "Get started",
         ctaExamples: "Examples",
         installTitle: "Install",
+        purposeTitle: "For component libraries and application UI",
+        purpose: "Keep BEM naming consistent across buttons, navigation, and cards. Use a namespace for your project and condition objects for state classes. The generator is framework-independent and works with TypeScript, JavaScript, React, and Vue.",
+        scope: "The library generates class name strings; you define the DOM and CSS. It does not generate stylesheets or automatically map CSS Modules local class names.",
+        docsTitle: "From your first component to the full reference",
+        guideLabel: "BEM getting started guide",
+        guideDetail: "Build an icon button and connect its class names, DOM, and CSS.",
+        apiLabel: "TypeScript API reference",
+        apiDetail: "Look up method signatures, defaults, conditions, and validation rules.",
+        examplesLabel: "React and Vue examples",
+        examplesDetail: "Map component state to separate classes for buttons and their elements.",
       };
 ---
 
@@ -68,5 +88,16 @@ const copy =
     <div class="install">
       <span><span class="accent">$</span> npm i @lai9fox/bem</span>
     </div>
+  </section>
+  <section class="section">
+    <h2>{copy.purposeTitle}</h2>
+    <p>{copy.purpose}</p>
+    <p>{copy.scope}</p>
+  </section>
+  <section class="section">
+    <h2>{copy.docsTitle}</h2>
+    <p><a href={withBase(localizedPath(locale, "/guide/"))}>{copy.guideLabel}</a> — {copy.guideDetail}</p>
+    <p><a href={withBase(localizedPath(locale, "/api/"))}>{copy.apiLabel}</a> — {copy.apiDetail}</p>
+    <p><a href={withBase(localizedPath(locale, "/examples/"))}>{copy.examplesLabel}</a> — {copy.examplesDetail}</p>
   </section>
 </BaseLayout>

@@ -1,8 +1,10 @@
 ---
-title: Guide
-description: "Install @lai9fox/bem, configure namespace and separators, and generate your first typed BEM class names with createBem."
+title: BEM getting started guide
+description: Install @lai9fox/bem and build an icon button with TypeScript, connecting BEM class names to DOM elements, CSS, and disabled state.
 locale: en
 ---
+
+This tutorial builds a button with browser DOM APIs in an existing TypeScript frontend project. In BEM, a block represents a component (`button`), an element represents a part of it (`button__icon`), and a modifier represents a variation or state (`button--disabled`).
 
 ## Install
 
@@ -10,78 +12,86 @@ locale: en
 npm i @lai9fox/bem
 ```
 
-## Create a generator
+## Create the button and icon
 
-Use `createBem` to set your namespace and separators, then create a generator for each block:
+Add this code to your browser entry file and run it after the page DOM has loaded:
 
 ```ts
 import { createBem } from "@lai9fox/bem";
 
-const bem = createBem({
-  namespace: "acme-",
-  elementSeparator: "__",
-  modifierSeparator: "--",
-});
+const button = createBem({ namespace: "ui-" }).block("button");
+const node = document.createElement("button");
+node.type = "button";
+node.className = button.block();
 
-const button = bem.block("button");
+const icon = document.createElement("span");
+icon.className = button.element("icon");
+icon.setAttribute("aria-hidden", "true");
+icon.textContent = "↓";
+
+node.append(icon, "Download");
+document.body.append(node);
 ```
 
-Defaults:
+The resulting structure gives the button and icon their own class names:
 
-```ts
-{
-  namespace: '',
-  elementSeparator: '__',
-  modifierSeparator: '--',
+```html
+<button type="button" class="ui-button">
+  <span class="ui-button__icon" aria-hidden="true">↓</span>
+  Download
+</button>
+```
+
+`namespace: "ui-"` adds the prefix literally, including the trailing `-`. Without this option, the button class is `button`.
+
+## Add CSS
+
+Put these rules in a stylesheet your project loads. The generator returns strings; CSS defines their appearance:
+
+```css
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid currentColor;
+  background: white;
+  color: #14532d;
+}
+
+.ui-button__icon {
+  margin-inline-end: 0.5rem;
+}
+
+.ui-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 ```
 
-## Single class names
+## Update classes from state
 
-Four basic usage:
-
-```ts
-button.block(); // 'acme-button'
-button.element("icon"); // 'acme-button__icon'
-button.modifier("disabled"); // 'acme-button--disabled'
-button.elementModifier("icon", "active"); // 'acme-button__icon--active'
-```
-
-## Batch generation
-
-Generate multiple names of the same kind in one call, space-joined. Empty arrays return `''`; duplicates are removed stably:
+Continue the TypeScript code above with a function that updates the button:
 
 ```ts
-button.elements(["icon", "label"]);
-// 'acme-button__icon acme-button__label'
+function setDisabled(disabled: boolean) {
+  node.disabled = disabled;
+  node.className = button.classes({
+    block: true,
+    modifiers: { disabled },
+  });
+}
 
-button.modifiers(["disabled", "loading"]);
-// 'acme-button--disabled acme-button--loading'
+setDisabled(true);
+// node.className: 'ui-button ui-button--disabled'
 
-button.elementModifiers("icon", ["active", "loading"]);
-// 'acme-button__icon--active acme-button__icon--loading'
+setDisabled(false);
+// node.className: 'ui-button'
 ```
 
-## Conditional mix with `classes()`
+`block: true` keeps the base styles, while `disabled` controls the modifier class. The native `disabled` property disables interaction; the class controls appearance. A modifier class alone does not disable the button.
 
-Emit several class names from component state in one call. Values use JavaScript truthiness; order is always `block` → `elements` → `modifiers` → `elementModifiers`:
+## Next steps
 
-```ts
-button.classes({
-  block: true,
-  elements: {
-    icon: true,
-    label: showLabel,
-  },
-  modifiers: {
-    disabled: isDisabled,
-  },
-  elementModifiers: {
-    icon: { active: isActive },
-  },
-});
-```
-
-`classes()` does not infer parent classes—declare block or element bases explicitly when you need them.
-
-See the [API](/en/api/) or [examples](/en/examples/) for more detail.
+- Use React or Vue: [complete component examples](/en/examples/).
+- Standardize naming across a project: [shared configuration](/en/examples/#shared-configuration).
+- Look up separators, batch methods, and conditions: [API reference](/en/api/).

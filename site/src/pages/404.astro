@@ -1,0 +1,28 @@
+---
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>404 · 页面不存在 / Page not found · @lai9fox/bem</title>
+    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="site-main">
+      <section class="hero">
+        <p class="hero-brand">@lai9fox/bem · 404</p>
+        <h1>页面不存在</h1>
+        <p>请检查地址，或从文档首页继续浏览。</p>
+        <p lang="en">Page not found. Check the URL or visit the documentation.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href={import.meta.env.BASE_URL}>中文文档</a>
+          <a class="btn btn-ghost" href={`${import.meta.env.BASE_URL}en/`} lang="en">English docs</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

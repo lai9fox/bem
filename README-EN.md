@@ -1,92 +1,37 @@
-[中文文档](./README.md) · [Docs site](https://bem.fox9.dev/en/)
+[中文](./README.md) · [Docs site](https://bem.fox9.dev/en/)
 
-# BEM Class Name Generator
+# TypeScript BEM class name generator
 
-`@lai9fox/bem` is a TypeScript BEM class name generator that generates BEM class names through explicit methods. Every generator method returns a string that can be assigned directly to `class` or `className`; batches are joined with one ASCII space.
+`@lai9fox/bem` generates block, element, and modifier class names through explicit methods. It includes TypeScript declarations and returns strings for `class` / `className`, with no UI framework dependency.
 
-Full guide, API, and examples: [docs site](https://bem.fox9.dev/en/).
+## Install
 
-## Create a generator
+```bash
+npm i @lai9fox/bem
+```
+
+## Quick example
 
 ```ts
 import { createBem } from "@lai9fox/bem";
 
-const bem = createBem({
-  namespace: "acme-",
-  elementSeparator: "__",
-  modifierSeparator: "--",
-});
+const button = createBem({ namespace: "ui-" }).block("button");
 
-const button = bem.block("button");
+button.classes({ block: true, modifiers: { disabled: true } });
+// 'ui-button ui-button--disabled'
+
+button.element("icon");
+// 'ui-button__icon'
 ```
 
-The defaults are:
+The first class string belongs on the button; the second belongs on its icon. Your application defines the styles and DOM.
 
-```ts
-{
-  namespace: '',
-  elementSeparator: '__',
-  modifierSeparator: '--',
-}
-```
+## Documentation
 
-## Generate one class
+- [Getting started](https://bem.fox9.dev/en/guide/): build a button and connect its class names, DOM, and CSS.
+- [API reference](https://bem.fox9.dev/en/api/): all methods, defaults, batches, conditions, and validation rules.
+- [React / Vue examples](https://bem.fox9.dev/en/examples/): complete components and shared project configuration.
 
-```ts
-button.block(); // 'acme-button'
-button.element("icon"); // 'acme-button__icon'
-button.modifier("disabled"); // 'acme-button--disabled'
-button.elementModifier("icon", "active"); // 'acme-button__icon--active'
-```
+## License
 
-## Generate homogeneous batches
-
-Homogeneous batch methods accept name arrays, remove later duplicates, and return one space-separated string.
-
-```ts
-button.elements(["icon", "label"]);
-// 'acme-button__icon acme-button__label'
-
-button.modifiers(["disabled", "loading"]);
-// 'acme-button--disabled acme-button--loading'
-
-button.elementModifiers("icon", ["active", "loading"]);
-// 'acme-button__icon--active acme-button__icon--loading'
-```
-
-An empty array returns `''`.
-
-## Generate a mixed class string
-
-Use `classes()` to describe block, element, modifier, and element-modifier classes together. Conditions use JavaScript truthiness: truthy values emit a class and falsy values omit it.
-
-```ts
-button.classes({
-  block: true,
-  elements: {
-    icon: true,
-    label: showLabel,
-  },
-  modifiers: {
-    disabled: isDisabled,
-  },
-  elementModifiers: {
-    icon: { active: isActive },
-  },
-});
-// 'acme-button acme-button__icon acme-button__label acme-button--disabled acme-button__icon--active'
-```
-
-Output order is always `block`, `elements`, `modifiers`, then `elementModifiers`; each object uses JavaScript own-enumerable-property order. Complete class names are stably de-duplicated, preserving their first occurrence.
-
-`classes()` never infers parent classes. `modifiers.disabled` emits only `block--disabled`, and `elementModifiers.icon.active` emits only `block__icon--active`. Declare the base class explicitly through `block` or `elements` when it is needed.
-
-## Validation
-
-- Block, element, and modifier names must be non-empty strings without whitespace.
-- `namespace` may be empty but cannot contain whitespace.
-- Separators must be non-empty strings without whitespace.
-- Batch names must be arrays. `classes()` fields `elements`, `modifiers`, and `elementModifiers` must be non-null, non-array objects.
-- `classes()` itself and every `elementModifiers` entry must also be non-null, non-array objects.
-
-Structural errors throw `TypeError`. Names and separators are composed literally: the library does not parse generated output, so names may contain separators and distinct structures may generate the same class name.
+[MIT](./LICENSE)

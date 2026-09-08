@@ -1,8 +1,10 @@
 ---
-title: 快速上手
-description: "安装 @lai9fox/bem，配置 namespace 与连接符，用 createBem 生成第一个 BEM 类名。"
+title: BEM 快速上手
+description: 安装 @lai9fox/bem，使用 TypeScript 创建带图标的按钮，将 BEM 类名连接到 DOM、CSS 和禁用状态。
 locale: zh
 ---
+
+本教程使用浏览器 DOM API 完成一个按钮，适用于已有的 TypeScript 前端项目。BEM 中，block 表示组件（`button`），element 表示内部元素（`button__icon`），modifier 表示变化或状态（`button--disabled`）。
 
 ## 安装
 
@@ -10,78 +12,86 @@ locale: zh
 npm i @lai9fox/bem
 ```
 
-## 创建生成器
+## 创建按钮和图标
 
-用 `createBem` 设定命名空间与连接符，再为每个 block 创建生成器：
+将下面代码放入项目的浏览器入口文件，在页面 DOM 加载后执行：
 
 ```ts
 import { createBem } from "@lai9fox/bem";
 
-const bem = createBem({
-  namespace: "acme-",
-  elementSeparator: "__",
-  modifierSeparator: "--",
-});
+const button = createBem({ namespace: "ui-" }).block("button");
+const node = document.createElement("button");
+node.type = "button";
+node.className = button.block();
 
-const button = bem.block("button");
+const icon = document.createElement("span");
+icon.className = button.element("icon");
+icon.setAttribute("aria-hidden", "true");
+icon.textContent = "↓";
+
+node.append(icon, "下载");
+document.body.append(node);
 ```
 
-默认配置：
+生成的结构如下。按钮与图标各自使用对应的类名：
 
-```ts
-{
-  namespace: '',
-  elementSeparator: '__',
-  modifierSeparator: '--',
+```html
+<button type="button" class="ui-button">
+  <span class="ui-button__icon" aria-hidden="true">↓</span>
+  下载
+</button>
+```
+
+`namespace: "ui-"` 是直接添加的前缀，包括末尾的 `-`。省略配置时，按钮类名为 `button`。
+
+## 添加 CSS
+
+将这些规则放入项目已加载的样式表。类名生成器只返回字符串，样式仍由 CSS 定义：
+
+```css
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid currentColor;
+  background: white;
+  color: #14532d;
+}
+
+.ui-button__icon {
+  margin-inline-end: 0.5rem;
+}
+
+.ui-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 ```
 
-## 单个类名
+## 根据状态更新类名
 
-四种基本用法：
-
-```ts
-button.block(); // 'acme-button'
-button.element("icon"); // 'acme-button__icon'
-button.modifier("disabled"); // 'acme-button--disabled'
-button.elementModifier("icon", "active"); // 'acme-button__icon--active'
-```
-
-## 批量生成
-
-一次生成多个同类类名，空格连接；空数组返回 `''`，重复名称稳定去重：
+接在前面的 TypeScript 代码后，为按钮添加状态更新函数：
 
 ```ts
-button.elements(["icon", "label"]);
-// 'acme-button__icon acme-button__label'
+function setDisabled(disabled: boolean) {
+  node.disabled = disabled;
+  node.className = button.classes({
+    block: true,
+    modifiers: { disabled },
+  });
+}
 
-button.modifiers(["disabled", "loading"]);
-// 'acme-button--disabled acme-button--loading'
+setDisabled(true);
+// node.className: 'ui-button ui-button--disabled'
 
-button.elementModifiers("icon", ["active", "loading"]);
-// 'acme-button__icon--active acme-button__icon--loading'
+setDisabled(false);
+// node.className: 'ui-button'
 ```
 
-## 条件组合 `classes()`
+`block: true` 保留基础样式，`disabled` 决定是否添加修饰类。原生 `disabled` 属性负责禁用交互，类名负责外观；仅添加修饰类不会禁用按钮。
 
-根据组件状态一次输出多个类名。条件值按 JavaScript truthiness 判断；顺序固定为 `block` → `elements` → `modifiers` → `elementModifiers`：
+## 下一步
 
-```ts
-button.classes({
-  block: true,
-  elements: {
-    icon: true,
-    label: showLabel,
-  },
-  modifiers: {
-    disabled: isDisabled,
-  },
-  elementModifiers: {
-    icon: { active: isActive },
-  },
-});
-```
-
-`classes()` 不会隐式补父类——需要 block 或 element 基础类时，请在对应字段里显式声明。
-
-更多细节参考 [API](/api/) 或者 [示例](/examples/)。
+- 在 React 或 Vue 中使用：[完整组件示例](/examples/)。
+- 统一项目的命名规则：[共用命名配置](/examples/#共用命名配置)。
+- 查询连接符、批量方法和条件行为：[API 参考](/api/)。
