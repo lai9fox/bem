@@ -1,6 +1,6 @@
 ---
-import BaseLayout from './BaseLayout.astro';
-import type { AppPath, Locale } from '../lib/i18n';
+import BaseLayout from "./BaseLayout.astro";
+import type { AppPath, Locale } from "../lib/i18n";
 
 interface Heading {
   depth: number;
@@ -29,8 +29,11 @@ const toc = headings.filter((h) => h.depth === 2);
     </article>
     {
       toc.length > 0 && (
-        <aside class="toc" aria-label={locale === 'zh' ? '本页目录' : 'On this page'}>
-          <p class="toc-title">{locale === 'zh' ? '本页' : 'On this page'}</p>
+        <aside
+          class="toc"
+          aria-label={locale === "zh" ? "本页目录" : "On this page"}
+        >
+          <p class="toc-title">{locale === "zh" ? "本页" : "On this page"}</p>
           <ol>
             {toc.map((h) => (
               <li>

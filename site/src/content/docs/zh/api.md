@@ -1,26 +1,26 @@
 ---
-title: BEM TypeScript API 参考
-description: 查阅 createBem、BemBlock 的完整类型、默认配置、批量生成、classes() 输出顺序、去重及 TypeError 校验规则。
+title: API 参考
+description: "@lai9fox/bem 的方法、类型、配置和校验规则。"
 locale: zh
 ---
 
-本页集中定义 `@lai9fox/bem` 的公开接口与行为。第一次使用请先阅读[快速上手](/guide/)；组件集成见 [React / Vue 示例](/examples/)。
+初次使用可先阅读[快速上手](/guide/)，或查看 [示例](/examples/)。
 
 ## createBem(options?)
 
-签名为 `createBem(options?: BemOptions): BemFactory`。返回冻结的工厂；`bem.block(name)` 返回冻结的 `BemBlock`。所有类名生成方法返回 `string`。
+`createBem(options?: BemOptions): BemFactory` 创建工厂对象，再通过 `bem.block(name)` 创建组件的类名生成器 `BemBlock`。两者均由 `Object.freeze()` 冻结。生成类名的方法均返回 `string`。
 
-| 选项 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `namespace` | `string` | `''` | 原样添加的前缀，可为空，不可含空白 |
-| `elementSeparator` | `string` | `'__'` | element 连接符，非空且不含空白 |
-| `modifierSeparator` | `string` | `'--'` | modifier 连接符，非空且不含空白 |
+| 选项                | 类型     | 默认值 | 说明                                   |
+| ------------------- | -------- | ------ | -------------------------------------- |
+| `namespace`         | `string` | `''`   | 类名前缀，可为空字符串，不可含空白字符 |
+| `elementSeparator`  | `string` | `'__'` | 元素连接符，非空且不含空白字符         |
+| `modifierSeparator` | `string` | `'--'` | 修饰符连接符，非空且不含空白字符       |
 
-省略选项或传入 `undefined` 时使用默认值。`null` 不表示使用默认值。`namespace` 不会自动补连接符，例如 `ui-` 与 `ui` 是不同的前缀。
+省略选项或传入 `undefined` 时使用默认值，传入 `null` 会抛出 `TypeError`。`namespace` 不会自动补连接符：前缀 `ui-` 生成 `ui-button`，前缀 `ui` 生成 `uibutton`。
 
 ## 单个类名
 
-以下示例使用同一个生成器：
+创建按钮的类名生成器：
 
 ```ts
 import { createBem } from "@lai9fox/bem";
@@ -33,11 +33,11 @@ button.modifier("disabled"); // 'ui-button--disabled'
 button.elementModifier("icon", "active"); // 'ui-button__icon--active'
 ```
 
-`modifier()` 与 `elementModifier()` 各返回一个修饰类，不自动附带 block 或 element 基础类。
+`modifier()` 和 `elementModifier()` 只返回修饰类。需要同时添加基础类时，使用下方的 `classes()`。
 
 ## 批量生成
 
-接着使用上面的 `button`。批量方法接受 `readonly string[]`，按输入顺序输出，以单个 ASCII 空格连接，稳定去重并保留首次出现的位置。空数组返回 `''`。
+批量方法接受 `readonly string[]`，按输入顺序生成类名，以单个空格（U+0020）连接。重复类名只保留第一次出现的结果，空数组返回 `''`。
 
 ```ts
 button.elements(["icon", "label", "icon"]);
@@ -52,11 +52,11 @@ button.elementModifiers("icon", ["active", "loading"]);
 button.elements([]); // ''
 ```
 
-`elements()` 返回多个 element 类的字符串，不负责创建或分配 DOM 元素。为不同节点分别设置类名时，使用 `element(name)`。
+为不同 DOM 节点分别设置类名时，应逐个调用 `element(name)`。
 
 ## 条件组合 classes()
 
-`classes(input: ClassInput): string` 按条件生成一个类名字符串。继续使用上面的 `button`：
+`classes(input: ClassInput): string` 根据条件组合类名：
 
 ```ts
 button.classes({
@@ -77,32 +77,32 @@ button.classes({ modifiers: { disabled: true } });
 button.classes({}); // ''
 ```
 
-- 条件使用 JavaScript truthiness：`true`、非空字符串（包括 `'false'`）、非零数字和对象会输出；`false`、`0`、`''`、`null`、`undefined`、`NaN` 不输出。
-- 输出顺序固定为 `block` → `elements` → `modifiers` → `elementModifiers`，与这四个字段的声明顺序无关。
-- 每个条件对象按 JavaScript 自有可枚举字符串属性顺序遍历（`Object.keys`）；整数索引键会按数值顺序排列。
-- 完整类名在组合后稳定去重，保留首次出现的位置。
-- 不隐式补父类。需要基础样式时，显式设置 `block: true` 或 `elements: { icon: true }`。
+- 条件按 JavaScript 的真假值规则判断，为真时添加类名。例如，`true`、非空字符串（包括 `'false'`）和对象为真；`false`、`0`、`''`、`null`、`undefined` 和 `NaN` 为假。
+- 输出顺序固定为 `block` → `elements` → `modifiers` → `elementModifiers`，与字段的书写顺序无关。
+- 条件对象按 `Object.keys()` 的顺序遍历：只处理自身可枚举的字符串键，整数索引键按数值升序排列。
+- 重复类名只保留第一次出现的结果，各类名以单个空格连接。
+- 基础类需要单独指定，例如 `block: true` 或 `elements: { icon: true }`。添加修饰类时不会自动添加基础类。
 
 ## 校验与错误
 
-结构或名称不合法时抛出 `TypeError`：
+输入不符合以下要求时，会抛出 `TypeError`：
 
-| 输入 | 要求 |
-| --- | --- |
-| `options` | 省略、`undefined`，或非 `null`、非数组对象 |
-| block / element / modifier 名称 | 非空且不含空白的字符串 |
-| 批量名称 | 数组，其中的名称均满足名称规则 |
-| `classes(input)` 的 `input` | 非 `null`、非数组对象 |
+| 输入                                          | 要求                                       |
+| --------------------------------------------- | ------------------------------------------ |
+| `options`                                     | 省略、`undefined`，或非 `null`、非数组对象 |
+| block / element / modifier 名称               | 非空且不含空白字符的字符串                 |
+| 批量方法的名称参数                            | 数组，每个名称均符合上述规则               |
+| `classes(input)` 的 `input`                   | 非 `null`、非数组对象                      |
 | `elements` / `modifiers` / `elementModifiers` | 省略、`undefined`，或非 `null`、非数组对象 |
-| 每个 `elementModifiers` 条目 | 非 `null`、非数组对象 |
+| 每个 `elementModifiers` 条目                  | 非 `null`、非数组对象                      |
 
-`classes()` 只校验实际输出的名称；falsy 条件对应的名称不参与校验，但上述对象结构仍会校验。`elementModifiers(element, [])` 虽返回空字符串，仍要求 element 名称合法。
+`classes()` 只校验条件为真时使用的名称，但始终检查上述对象结构。`elementModifiers(element, [])` 返回空字符串，仍会校验 `element` 名称。
 
-名称和连接符原样拼接，不做解析、清洗或 CSS 转义。名称中允许出现连接符；不同输入结构可能生成相同类名。若名称包含 CSS 特殊字符，选择器需由应用正确转义。
+名称和连接符会原样拼接。名称可以包含连接符，因此不同输入可能生成相同类名。库不处理 CSS 转义；名称包含 CSS 特殊字符时，需要自行转义选择器。
 
 ## 导出类型
 
-以下五个类型均可通过 `import type { … } from "@lai9fox/bem"` 导入：
+使用 `import type { … } from "@lai9fox/bem"` 导入以下类型：
 
 ```ts
 interface BemOptions {
@@ -136,4 +136,4 @@ interface BemBlock {
 }
 ```
 
-共享工厂的项目结构见[共用命名配置](/examples/#共用命名配置)。
+多个组件可以复用同一个工厂，见[共用命名配置](/examples/#共用命名配置)。

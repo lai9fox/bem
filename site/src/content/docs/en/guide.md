@@ -1,10 +1,14 @@
 ---
-title: BEM getting started guide
-description: Install @lai9fox/bem and build an icon button with TypeScript, connecting BEM class names to DOM elements, CSS, and disabled state.
+title: Getting started
+description: Use @lai9fox/bem to create a button with an icon, add styles, and update classes based on its disabled state.
 locale: en
 ---
 
-This tutorial builds a button with browser DOM APIs in an existing TypeScript frontend project. In BEM, a block represents a component (`button`), an element represents a part of it (`button__icon`), and a modifier represents a variation or state (`button--disabled`).
+BEM class names have three parts:
+
+- **Block**: the component itself, such as `button`.
+- **Element**: a part of the component, such as `button__icon`.
+- **Modifier**: a variation or state of a block or element, such as `button--disabled`.
 
 ## Install
 
@@ -13,8 +17,6 @@ npm i @lai9fox/bem
 ```
 
 ## Create the button and icon
-
-Add this code to your browser entry file and run it after the page DOM has loaded:
 
 ```ts
 import { createBem } from "@lai9fox/bem";
@@ -33,7 +35,7 @@ node.append(icon, "Download");
 document.body.append(node);
 ```
 
-The resulting structure gives the button and icon their own class names:
+The resulting HTML:
 
 ```html
 <button type="button" class="ui-button">
@@ -42,11 +44,11 @@ The resulting structure gives the button and icon their own class names:
 </button>
 ```
 
-`namespace: "ui-"` adds the prefix literally, including the trailing `-`. Without this option, the button class is `button`.
+`namespace` sets the class name prefix. Here, `ui-` includes the trailing `-`. Omit this option to get `button`.
 
 ## Add CSS
 
-Put these rules in a stylesheet your project loads. The generator returns strings; CSS defines their appearance:
+Add this CSS to a stylesheet your project loads:
 
 ```css
 .ui-button {
@@ -70,8 +72,6 @@ Put these rules in a stylesheet your project loads. The generator returns string
 
 ## Update classes from state
 
-Continue the TypeScript code above with a function that updates the button:
-
 ```ts
 function setDisabled(disabled: boolean) {
   node.disabled = disabled;
@@ -88,10 +88,10 @@ setDisabled(false);
 // node.className: 'ui-button'
 ```
 
-`block: true` keeps the base styles, while `disabled` controls the modifier class. The native `disabled` property disables interaction; the class controls appearance. A modifier class alone does not disable the button.
+`block: true` adds the base class `ui-button`. When `disabled` is `true`, it also adds `ui-button--disabled`. Classes control styles; set `node.disabled` to disable the button.
 
 ## Next steps
 
-- Use React or Vue: [complete component examples](/en/examples/).
-- Standardize naming across a project: [shared configuration](/en/examples/#shared-configuration).
-- Look up separators, batch methods, and conditions: [API reference](/en/api/).
+- [examples](/en/examples/): use the library in components.
+- [Shared configuration](/en/examples/#shared-configuration): reuse class name prefixes and separators.
+- [API reference](/en/api/): look up methods, types, and configuration.

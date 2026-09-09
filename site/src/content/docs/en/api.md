@@ -1,26 +1,26 @@
 ---
-title: BEM TypeScript API reference
-description: Complete createBem and BemBlock types, configuration defaults, batch methods, classes() output order, deduplication, and TypeError validation rules.
+title: API reference
+description: Methods, types, configuration, and validation rules for @lai9fox/bem.
 locale: en
 ---
 
-This page defines the public interfaces and behavior of `@lai9fox/bem`. Start with the [guide](/en/guide/) for your first component, or see [React / Vue examples](/en/examples/) for integration.
+New to the library? Start with [Getting started](/en/guide/) or the [examples](/en/examples/).
 
 ## createBem(options?)
 
-The signature is `createBem(options?: BemOptions): BemFactory`. It returns a frozen factory; `bem.block(name)` returns a frozen `BemBlock`. Every class name generator method returns a `string`.
+`createBem(options?: BemOptions): BemFactory` creates a factory. Call `bem.block(name)` to create a component's class name generator, a `BemBlock`. Both objects are frozen with `Object.freeze()`. All class name methods return a `string`.
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `namespace` | `string` | `''` | Literal prefix; may be empty, no whitespace |
-| `elementSeparator` | `string` | `'__'` | Element separator; non-empty, no whitespace |
-| `modifierSeparator` | `string` | `'--'` | Modifier separator; non-empty, no whitespace |
+| Option              | Type     | Default | Description                                    |
+| ------------------- | -------- | ------- | ---------------------------------------------- |
+| `namespace`         | `string` | `''`    | Class name prefix; may be empty, no whitespace |
+| `elementSeparator`  | `string` | `'__'`  | Element separator; non-empty, no whitespace    |
+| `modifierSeparator` | `string` | `'--'`  | Modifier separator; non-empty, no whitespace   |
 
-Omitted options and `undefined` use the defaults. `null` does not select a default. The namespace does not get an extra separator: `ui-` and `ui` are different prefixes.
+Omitted options and `undefined` use the defaults; `null` throws `TypeError`. No separator is added after `namespace`: the prefix `ui-` produces `ui-button`, while `ui` produces `uibutton`.
 
 ## Single class names
 
-These examples share one generator:
+Create a class name generator for a button:
 
 ```ts
 import { createBem } from "@lai9fox/bem";
@@ -33,11 +33,11 @@ button.modifier("disabled"); // 'ui-button--disabled'
 button.elementModifier("icon", "active"); // 'ui-button__icon--active'
 ```
 
-`modifier()` and `elementModifier()` each return one modifier class without adding the block or element base class.
+`modifier()` and `elementModifier()` return only the modifier class. To include the base class, use `classes()` below.
 
 ## Batch generation
 
-Continue with `button` above. Batch methods accept `readonly string[]`, preserve input order, join with one ASCII space, and remove duplicates while keeping the first occurrence. Empty arrays return `''`.
+Batch methods accept `readonly string[]` and generate classes in input order, joined by a single space (U+0020). Duplicate classes are removed, keeping the first occurrence. Empty arrays return `''`.
 
 ```ts
 button.elements(["icon", "label", "icon"]);
@@ -52,11 +52,11 @@ button.elementModifiers("icon", ["active", "loading"]);
 button.elements([]); // ''
 ```
 
-`elements()` returns a string containing several element classes; it does not create or assign DOM elements. Use `element(name)` to set the class on each separate node.
+To assign classes to separate DOM nodes, call `element(name)` for each node.
 
 ## Conditional composition with classes()
 
-`classes(input: ClassInput): string` generates one class string from conditions. Continue with `button` above:
+`classes(input: ClassInput): string` combines class names based on conditions:
 
 ```ts
 button.classes({
@@ -77,32 +77,32 @@ button.classes({ modifiers: { disabled: true } });
 button.classes({}); // ''
 ```
 
-- Conditions use JavaScript truthiness: `true`, non-empty strings (including `'false'`), non-zero numbers, and objects emit classes; `false`, `0`, `''`, `null`, `undefined`, and `NaN` do not.
-- Output order is always `block` → `elements` → `modifiers` → `elementModifiers`, regardless of how these four fields are declared.
-- Each condition object follows JavaScript own-enumerable-string-property order (`Object.keys`); integer index keys appear in numeric order.
-- Complete class names are deduplicated after composition, keeping their first occurrence.
-- Parent classes are never inferred. Declare `block: true` or `elements: { icon: true }` when you need base styles.
+- Classes are added when their conditions are truthy in JavaScript. For example, `true`, non-empty strings (including `'false'`), and objects are truthy; `false`, `0`, `''`, `null`, `undefined`, and `NaN` are falsy.
+- Output order is always `block` → `elements` → `modifiers` → `elementModifiers`, regardless of field order in the input.
+- Condition objects are read in `Object.keys()` order: only their own enumerable string keys are processed, with integer index keys sorted numerically.
+- Duplicate class names are removed, keeping the first occurrence. Classes are joined by a single space.
+- Add base classes explicitly with `block: true` or `elements: { icon: true }`. Modifier classes do not add base classes automatically.
 
 ## Validation and errors
 
-Invalid structures or names throw `TypeError`:
+Inputs that do not meet these requirements throw `TypeError`:
 
-| Input | Requirement |
-| --- | --- |
-| `options` | Omitted, `undefined`, or a non-null, non-array object |
-| Block / element / modifier names | Non-empty strings without whitespace |
-| Batch names | An array whose names satisfy the name rules |
-| `classes(input)` argument | A non-null, non-array object |
+| Input                                         | Requirement                                           |
+| --------------------------------------------- | ----------------------------------------------------- |
+| `options`                                     | Omitted, `undefined`, or a non-null, non-array object |
+| Block / element / modifier names              | Non-empty strings without whitespace                  |
+| Batch name arguments                          | An array of names that follow the rules above         |
+| `classes(input)` argument                     | A non-null, non-array object                          |
 | `elements` / `modifiers` / `elementModifiers` | Omitted, `undefined`, or a non-null, non-array object |
-| Each `elementModifiers` entry | A non-null, non-array object |
+| Each `elementModifiers` entry                 | A non-null, non-array object                          |
 
-`classes()` validates names only when they are emitted. Names behind falsy conditions are skipped, but the object structures above are still validated. `elementModifiers(element, [])` returns an empty string but still requires a valid element name.
+`classes()` validates only names used by truthy conditions, but always checks the object structures above. `elementModifiers(element, [])` returns an empty string and still validates the element name.
 
-Names and separators are concatenated literally, without parsing, sanitizing, or CSS escaping. Names may contain separators, and distinct input structures may produce the same class name. If a name contains CSS special characters, your application must escape selectors appropriately.
+Names and separators are joined as provided. Names can contain separators, so different inputs may produce the same class name. The library does not escape CSS: if names contain special CSS characters, escape them when writing selectors.
 
 ## Exported types
 
-All five types below can be imported with `import type { … } from "@lai9fox/bem"`:
+Import these types with `import type { … } from "@lai9fox/bem"`:
 
 ```ts
 interface BemOptions {
@@ -136,4 +136,4 @@ interface BemBlock {
 }
 ```
 
-See [shared configuration](/en/examples/#shared-configuration) for a project structure that reuses one factory.
+Multiple components can reuse one factory. See [Shared configuration](/en/examples/#shared-configuration).

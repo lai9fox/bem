@@ -1,14 +1,14 @@
 ---
-title: React and Vue BEM component examples
-description: Build React and Vue download buttons with @lai9fox/bem, separate button and icon state classes, and reuse a shared naming configuration.
+title: React and Vue examples
+description: Update button and icon classes based on download state, and share naming configuration across components.
 locale: en
 ---
 
-These examples target existing React TypeScript or Vue 3.3+ projects. [Install @lai9fox/bem](/en/guide/), choose the component for your framework, and add the shared `button.css` below. For the relationship between DOM and CSS, read the [getting started guide](/en/guide/).
+These examples work in React with TypeScript or Vue 3.3+. [Install @lai9fox/bem](/en/guide/), choose the component for your framework, and add `button.css` below.
 
 ## React: download button
 
-Save as `DownloadButton.tsx`. The parent supplies `onDownload` and passes `loading={true}` during the download. The generator lives outside the component; each render computes class names from props.
+Save as `DownloadButton.tsx`. The parent handles downloads through `onDownload` and passes `loading={true}` while downloading. The class name generator is created outside the component and uses props to generate classes on each render.
 
 ```tsx
 import { createBem } from "@lai9fox/bem";
@@ -55,7 +55,7 @@ export function DownloadButton({
 
 ## Vue: reactive download state
 
-Save as `DownloadButton.vue`. The parent passes state with `:loading="loading"` and handles `@download="startDownload"`. The computed values regenerate class names whenever the props change.
+Save as `DownloadButton.vue`. The parent passes state through `:loading="loading"` and handles downloads with `@download="startDownload"`. The computed values update class names when the relevant props change.
 
 ```vue
 <script setup lang="ts">
@@ -63,21 +63,31 @@ import { computed } from "vue";
 import { createBem } from "@lai9fox/bem";
 import "./button.css";
 
-const props = withDefaults(defineProps<{
-  disabled?: boolean;
-  loading?: boolean;
-}>(), { disabled: false, loading: false });
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean;
+    loading?: boolean;
+  }>(),
+  { disabled: false, loading: false },
+);
 
 const emit = defineEmits<{ download: [] }>();
 const button = createBem({ namespace: "ui-" }).block("button");
-const buttonClass = computed(() => button.classes({
-  block: true,
-  modifiers: { disabled: props.disabled || props.loading, loading: props.loading },
-}));
-const iconClass = computed(() => button.classes({
-  elements: { icon: true },
-  elementModifiers: { icon: { loading: props.loading } },
-}));
+const buttonClass = computed(() =>
+  button.classes({
+    block: true,
+    modifiers: {
+      disabled: props.disabled || props.loading,
+      loading: props.loading,
+    },
+  }),
+);
+const iconClass = computed(() =>
+  button.classes({
+    elements: { icon: true },
+    elementModifiers: { icon: { loading: props.loading } },
+  }),
+);
 </script>
 
 <template>
@@ -88,7 +98,9 @@ const iconClass = computed(() => button.classes({
     :class="buttonClass"
     @click="emit('download')"
   >
-    <span :class="iconClass" aria-hidden="true">{{ props.loading ? "…" : "↓" }}</span>
+    <span :class="iconClass" aria-hidden="true">{{
+      props.loading ? "…" : "↓"
+    }}</span>
     {{ props.loading ? "Downloading" : "Download" }}
   </button>
 </template>
@@ -96,7 +108,7 @@ const iconClass = computed(() => button.classes({
 
 ## Styles and output
 
-Create `button.css` alongside your chosen component:
+Create `button.css` in the component's directory:
 
 ```css
 .ui-button {
@@ -126,13 +138,16 @@ Create `button.css` alongside your chosen component:
 }
 ```
 
-While loading, the button receives `ui-button ui-button--disabled ui-button--loading` and the icon receives `ui-button__icon ui-button__icon--loading`. Icon classes belong on the inner `span`, separately from the outer button.
+During a download, the class names are:
 
-Classes control styles, native `disabled` prevents repeated clicks, and `aria-busy` signals work in progress. The parent manages download state and request logic. See the [classes() API](/en/api/#conditional-composition-with-classes) for exact field behavior.
+- Button: `ui-button ui-button--disabled ui-button--loading`.
+- Icon `span`: `ui-button__icon ui-button__icon--loading`.
+
+The `disabled` attribute disables the button, `aria-busy` marks it as busy, and classes control styles. The parent manages download state and requests. See the [classes() API](/en/api/#conditional-composition-with-classes) for condition rules.
 
 ## Shared configuration
 
-Create one factory in `bem.ts`, then create a block for each component. This navigation example emits both the base element class and the current-item modifier:
+Create a factory in `bem.ts`. Each component can import it and call `bem.block(name)`. This navigation example adds a modifier class to the current item:
 
 ```ts
 // bem.ts
@@ -158,4 +173,4 @@ navigationItemClass(true);
 // 'ui-nav__item ui-nav__item--current'
 ```
 
-The button above can import `bem` from this file and use `bem.block("button")` too. When changing the namespace or separators, update the matching CSS selectors. See [createBem configuration](/en/api/#createbemoptions) for all options.
+The button component can also import this `bem` and call `bem.block("button")`. If you change the class name prefix or separators, update the CSS selectors too. See [createBem](/en/api/#createbemoptions) for configuration options.

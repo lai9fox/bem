@@ -30,7 +30,7 @@ button.element("icon");
 
 - [快速上手](https://bem.fox9.dev/guide/)：完成一个按钮，连接类名、DOM 与 CSS。
 - [API 参考](https://bem.fox9.dev/api/)：全部方法、默认配置、批量生成、条件组合与校验规则。
-- [React / Vue 示例](https://bem.fox9.dev/examples/)：完整组件与项目共用命名配置。
+- [示例](https://bem.fox9.dev/examples/)：完整组件与项目共用命名配置。
 
 ## 许可证
 

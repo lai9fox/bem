@@ -1,5 +1,5 @@
 import { defineConfig } from 'eslint/config';
-import configs from '@lai9fox/eslint-config';
+import eslintConfig from '@lai9fox/eslint-config';
 
 
 export default defineConfig([
@@ -13,6 +13,6 @@ export default defineConfig([
   },
   {
     files: ['src/**/*.{js,mjs,cjs,ts}'],
-    extends: [configs.tsConfig],
+    extends: [eslintConfig({ typescript: true })],
   },
 ]);

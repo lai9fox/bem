@@ -30,7 +30,7 @@ The first class string belongs on the button; the second belongs on its icon. Yo
 
 - [Getting started](https://bem.fox9.dev/en/guide/): build a button and connect its class names, DOM, and CSS.
 - [API reference](https://bem.fox9.dev/en/api/): all methods, defaults, batches, conditions, and validation rules.
-- [React / Vue examples](https://bem.fox9.dev/en/examples/): complete components and shared project configuration.
+- [examples](https://bem.fox9.dev/en/examples/): complete components and shared project configuration.
 
 ## License
 

@@ -9,7 +9,11 @@ import "../styles/global.css";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
     <title>404 · 页面不存在 / Page not found · @lai9fox/bem</title>
-    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} type="image/svg+xml" />
+    <link
+      rel="icon"
+      href={`${import.meta.env.BASE_URL}favicon.svg`}
+      type="image/svg+xml"
+    />
   </head>
   <body>
     <main class="site-main">
@@ -17,10 +21,17 @@ import "../styles/global.css";
         <p class="hero-brand">@lai9fox/bem · 404</p>
         <h1>页面不存在</h1>
         <p>请检查地址，或从文档首页继续浏览。</p>
-        <p lang="en">Page not found. Check the URL or visit the documentation.</p>
+        <p lang="en">
+          Page not found. Check the URL or visit the documentation.
+        </p>
         <div class="cta-row">
-          <a class="btn btn-primary" href={import.meta.env.BASE_URL}>中文文档</a>
-          <a class="btn btn-ghost" href={`${import.meta.env.BASE_URL}en/`} lang="en">English docs</a>
+          <a class="btn btn-primary" href={import.meta.env.BASE_URL}>中文文档</a
+          >
+          <a
+            class="btn btn-ghost"
+            href={`${import.meta.env.BASE_URL}en/`}
+            lang="en">English docs</a
+          >
         </div>
       </section>
     </main>
