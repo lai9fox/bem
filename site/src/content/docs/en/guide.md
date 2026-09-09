@@ -1,8 +1,14 @@
 ---
-title: Guide
-description: "Install @lai9fox/bem, configure namespace and separators, and generate your first typed BEM class names with createBem."
+title: Getting started
+description: Use @lai9fox/bem to create a button with an icon, add styles, and update classes based on its disabled state.
 locale: en
 ---
+
+BEM class names have three parts:
+
+- **Block**: the component itself, such as `button`.
+- **Element**: a part of the component, such as `button__icon`.
+- **Modifier**: a variation or state of a block or element, such as `button--disabled`.
 
 ## Install
 
@@ -10,78 +16,82 @@ locale: en
 npm i @lai9fox/bem
 ```
 
-## Create a generator
-
-Use `createBem` to set your namespace and separators, then create a generator for each block:
+## Create the button and icon
 
 ```ts
 import { createBem } from "@lai9fox/bem";
 
-const bem = createBem({
-  namespace: "acme-",
-  elementSeparator: "__",
-  modifierSeparator: "--",
-});
+const button = createBem({ namespace: "ui-" }).block("button");
+const node = document.createElement("button");
+node.type = "button";
+node.className = button.block();
 
-const button = bem.block("button");
+const icon = document.createElement("span");
+icon.className = button.element("icon");
+icon.setAttribute("aria-hidden", "true");
+icon.textContent = "↓";
+
+node.append(icon, "Download");
+document.body.append(node);
 ```
 
-Defaults:
+The resulting HTML:
 
-```ts
-{
-  namespace: '',
-  elementSeparator: '__',
-  modifierSeparator: '--',
+```html
+<button type="button" class="ui-button">
+  <span class="ui-button__icon" aria-hidden="true">↓</span>
+  Download
+</button>
+```
+
+`namespace` sets the class name prefix. Here, `ui-` includes the trailing `-`. Omit this option to get `button`.
+
+## Add CSS
+
+Add this CSS to a stylesheet your project loads:
+
+```css
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid currentColor;
+  background: white;
+  color: #14532d;
+}
+
+.ui-button__icon {
+  margin-inline-end: 0.5rem;
+}
+
+.ui-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 ```
 
-## Single class names
-
-Four basic usage:
+## Update classes from state
 
 ```ts
-button.block(); // 'acme-button'
-button.element("icon"); // 'acme-button__icon'
-button.modifier("disabled"); // 'acme-button--disabled'
-button.elementModifier("icon", "active"); // 'acme-button__icon--active'
+function setDisabled(disabled: boolean) {
+  node.disabled = disabled;
+  node.className = button.classes({
+    block: true,
+    modifiers: { disabled },
+  });
+}
+
+setDisabled(true);
+// node.className: 'ui-button ui-button--disabled'
+
+setDisabled(false);
+// node.className: 'ui-button'
 ```
 
-## Batch generation
+`block: true` adds the base class `ui-button`. When `disabled` is `true`, it also adds `ui-button--disabled`. Classes control styles; set `node.disabled` to disable the button.
 
-Generate multiple names of the same kind in one call, space-joined. Empty arrays return `''`; duplicates are removed stably:
+## Next steps
 
-```ts
-button.elements(["icon", "label"]);
-// 'acme-button__icon acme-button__label'
-
-button.modifiers(["disabled", "loading"]);
-// 'acme-button--disabled acme-button--loading'
-
-button.elementModifiers("icon", ["active", "loading"]);
-// 'acme-button__icon--active acme-button__icon--loading'
-```
-
-## Conditional mix with `classes()`
-
-Emit several class names from component state in one call. Values use JavaScript truthiness; order is always `block` → `elements` → `modifiers` → `elementModifiers`:
-
-```ts
-button.classes({
-  block: true,
-  elements: {
-    icon: true,
-    label: showLabel,
-  },
-  modifiers: {
-    disabled: isDisabled,
-  },
-  elementModifiers: {
-    icon: { active: isActive },
-  },
-});
-```
-
-`classes()` does not infer parent classes—declare block or element bases explicitly when you need them.
-
-See the [API](/en/api/) or [examples](/en/examples/) for more detail.
+- [examples](/en/examples/): use the library in components.
+- [Shared configuration](/en/examples/#shared-configuration): reuse class name prefixes and separators.
+- [API reference](/en/api/): look up methods, types, and configuration.

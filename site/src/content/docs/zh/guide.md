@@ -1,8 +1,14 @@
 ---
 title: 快速上手
-description: "安装 @lai9fox/bem，配置 namespace 与连接符，用 createBem 生成第一个 BEM 类名。"
+description: 用 @lai9fox/bem 创建带图标的按钮，添加样式，并根据禁用状态更新类名。
 locale: zh
 ---
+
+BEM 将类名分为三部分：
+
+- **block（块）**：组件本身，如 `button`。
+- **element（元素）**：组件的组成部分，如 `button__icon`。
+- **modifier（修饰符）**：组件或元素的变体、状态，如 `button--disabled`。
 
 ## 安装
 
@@ -10,78 +16,82 @@ locale: zh
 npm i @lai9fox/bem
 ```
 
-## 创建生成器
-
-用 `createBem` 设定命名空间与连接符，再为每个 block 创建生成器：
+## 创建按钮和图标
 
 ```ts
 import { createBem } from "@lai9fox/bem";
 
-const bem = createBem({
-  namespace: "acme-",
-  elementSeparator: "__",
-  modifierSeparator: "--",
-});
+const button = createBem({ namespace: "ui-" }).block("button");
+const node = document.createElement("button");
+node.type = "button";
+node.className = button.block();
 
-const button = bem.block("button");
+const icon = document.createElement("span");
+icon.className = button.element("icon");
+icon.setAttribute("aria-hidden", "true");
+icon.textContent = "↓";
+
+node.append(icon, "下载");
+document.body.append(node);
 ```
 
-默认配置：
+生成的 HTML 如下：
 
-```ts
-{
-  namespace: '',
-  elementSeparator: '__',
-  modifierSeparator: '--',
+```html
+<button type="button" class="ui-button">
+  <span class="ui-button__icon" aria-hidden="true">↓</span>
+  下载
+</button>
+```
+
+`namespace` 设置类名前缀。这里的 `ui-` 包含末尾的 `-`；省略该选项时，按钮类名为 `button`。
+
+## 添加 CSS
+
+将以下 CSS 添加到项目已加载的样式表中：
+
+```css
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid currentColor;
+  background: white;
+  color: #14532d;
+}
+
+.ui-button__icon {
+  margin-inline-end: 0.5rem;
+}
+
+.ui-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 ```
 
-## 单个类名
-
-四种基本用法：
+## 根据状态更新类名
 
 ```ts
-button.block(); // 'acme-button'
-button.element("icon"); // 'acme-button__icon'
-button.modifier("disabled"); // 'acme-button--disabled'
-button.elementModifier("icon", "active"); // 'acme-button__icon--active'
+function setDisabled(disabled: boolean) {
+  node.disabled = disabled;
+  node.className = button.classes({
+    block: true,
+    modifiers: { disabled },
+  });
+}
+
+setDisabled(true);
+// node.className: 'ui-button ui-button--disabled'
+
+setDisabled(false);
+// node.className: 'ui-button'
 ```
 
-## 批量生成
+`block: true` 添加基础类 `ui-button`。`disabled` 为 `true` 时，再添加 `ui-button--disabled`。类名用于设置样式，实际禁用按钮需要设置 `node.disabled`。
 
-一次生成多个同类类名，空格连接；空数组返回 `''`，重复名称稳定去重：
+## 下一步
 
-```ts
-button.elements(["icon", "label"]);
-// 'acme-button__icon acme-button__label'
-
-button.modifiers(["disabled", "loading"]);
-// 'acme-button--disabled acme-button--loading'
-
-button.elementModifiers("icon", ["active", "loading"]);
-// 'acme-button__icon--active acme-button__icon--loading'
-```
-
-## 条件组合 `classes()`
-
-根据组件状态一次输出多个类名。条件值按 JavaScript truthiness 判断；顺序固定为 `block` → `elements` → `modifiers` → `elementModifiers`：
-
-```ts
-button.classes({
-  block: true,
-  elements: {
-    icon: true,
-    label: showLabel,
-  },
-  modifiers: {
-    disabled: isDisabled,
-  },
-  elementModifiers: {
-    icon: { active: isActive },
-  },
-});
-```
-
-`classes()` 不会隐式补父类——需要 block 或 element 基础类时，请在对应字段里显式声明。
-
-更多细节参考 [API](/api/) 或者 [示例](/examples/)。
+- [示例](/examples/)：在组件中使用。
+- [共用命名配置](/examples/#共用命名配置)：统一类名前缀和连接符。
+- [API 参考](/api/)：查看方法、类型和配置。

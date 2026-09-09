@@ -15,19 +15,42 @@ const copy =
   locale === "zh"
     ? {
         title: "@lai9fox/bem",
-        headline: "BEM 类名，一目了然",
-        lead: "用显式方法生成 BEM 的 block、element、modifier。TypeScript 类型安全，返回可直接用于 class / className 的字符串。",
+        headline: "BEM 类名生成器",
+        lead: "通过 block、element、modifier 等方法生成 BEM 类名，支持 TypeScript 类型检查。",
         ctaGuide: "快速上手",
         ctaExamples: "示例",
         installTitle: "安装",
+        purposeTitle: "适用于组件库与业务组件",
+        purpose:
+          "用 namespace 设置类名前缀，用条件对象按组件状态组合类名。支持 JavaScript 和 TypeScript，不依赖 UI 框架。",
+        docsTitle: "文档",
+        guideLabel: "快速上手",
+        guideDetail: "创建带图标的按钮，添加样式和禁用状态。",
+        apiLabel: "API 参考",
+        apiDetail: "查看方法、类型、配置和校验规则。",
+        examplesLabel: "示例",
+        examplesDetail: "根据下载状态更新按钮和图标的类名。",
       }
     : {
         title: "@lai9fox/bem",
-        headline: "BEM class names, made explicit",
-        lead: "Generate BEM block, element, and modifier class names with explicit TypeScript methods. Returns strings you can assign to class or className.",
+        headline: "BEM class name generator",
+        lead: "Generate BEM class names with methods such as block, element, and modifier, with TypeScript type checking.",
         ctaGuide: "Get started",
         ctaExamples: "Examples",
         installTitle: "Install",
+        purposeTitle: "For component libraries and application UI",
+        purpose:
+          "Set a class name prefix with namespace and combine classes based on component state. Works with JavaScript and TypeScript, with no UI framework dependency.",
+        docsTitle: "Documentation",
+        guideLabel: "Getting started",
+        guideDetail:
+          "Create a button with an icon, add styles, and handle its disabled state.",
+        apiLabel: "API reference",
+        apiDetail:
+          "Look up methods, types, configuration, and validation rules.",
+        examplesLabel: "examples",
+        examplesDetail:
+          "Update button and icon classes as the download state changes.",
       };
 ---
 
@@ -68,5 +91,26 @@ const copy =
     <div class="install">
       <span><span class="accent">$</span> npm i @lai9fox/bem</span>
     </div>
+  </section>
+  <section class="section">
+    <h2>{copy.purposeTitle}</h2>
+    <p>{copy.purpose}</p>
+  </section>
+  <section class="section">
+    <h2>{copy.docsTitle}</h2>
+    <p>
+      <a href={withBase(localizedPath(locale, "/guide/"))}>{copy.guideLabel}</a> —
+      {copy.guideDetail}
+    </p>
+    <p>
+      <a href={withBase(localizedPath(locale, "/api/"))}>{copy.apiLabel}</a> — {
+        copy.apiDetail
+      }
+    </p>
+    <p>
+      <a href={withBase(localizedPath(locale, "/examples/"))}
+        >{copy.examplesLabel}</a
+      > — {copy.examplesDetail}
+    </p>
   </section>
 </BaseLayout>

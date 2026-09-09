@@ -38,9 +38,9 @@
   },
   "homepage": "https://bem.fox9.dev/",
   "devDependencies": {
-    "@lai9fox/eslint-config": "^2.1.2",
+    "@lai9fox/eslint-config": "^3.0.0",
     "@types/jest": "^29.5.14",
-    "eslint": "^9.25.1",
+    "eslint": "^10.10.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.3.2",
     "typescript": "^5.8.3"
